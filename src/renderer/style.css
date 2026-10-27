@@ -40,7 +40,7 @@ button, select { -webkit-user-select: none; user-select: none; }
 .app {
   max-width: 1680px;
   height: 100dvh;
-  min-height: 620px;
+  min-height: min(620px, 100dvh);
   margin: 0 auto;
   padding: 22px 28px 10px;
   display: flex;

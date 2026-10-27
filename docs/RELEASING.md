@@ -15,11 +15,11 @@ The **Prepare release review artifacts** workflow accepts the tag and its exact 
 
 ## Publish a draft
 
-Create a draft GitHub Release. A plain version such as `0.3.5` is a regular release; use the prerelease flag only for a deliberately suffixed version. Upload these canonical filenames for `0.3.5`:
+Create a draft GitHub Release. A plain version such as `0.3.6` is a regular release; use the prerelease flag only for a deliberately suffixed version. Upload these canonical filenames for `0.3.6`:
 
-- `LazyCall-Web-Setup-0.3.5.exe` — small bootstrap.
-- `LazyCall-Setup-0.3.5.exe` — full installer.
-- `lazycall-0.3.5-x64.nsis.7z` — bootstrap payload.
+- `LazyCall-Web-Setup-0.3.6.exe` — small bootstrap.
+- `LazyCall-Setup-0.3.6.exe` — full installer.
+- `lazycall-0.3.6-x64.nsis.7z` — bootstrap payload.
 - `latest.yml` — update metadata for the full installer.
 - `SHA256SUMS.txt` — hashes using those exact asset names.
 

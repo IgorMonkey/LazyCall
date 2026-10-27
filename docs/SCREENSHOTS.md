@@ -4,6 +4,8 @@
 
 A fictional order-search conversation. The language matches this page; each capture has a light and dark pair. No real meeting, repository, account, or provider material is shown.
 
+The [layout guidelines](UI_GUIDELINES.md) describe the shared pane grid, dialog scrolling and the design references used for this interface.
+
 ## Selected synthetic English demo
 
 These five captures describe one fictional order-search discussion. They switch between the paired light and dark captures with the reader’s theme preference.

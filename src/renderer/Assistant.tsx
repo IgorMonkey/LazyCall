@@ -59,6 +59,8 @@ export function Assistant({ status, messages, hasSession, hasTranscript, phase, 
   };
   return <section className="assistant-pane" aria-label={t("assistant")}>
     <div className="pane-header"><h2>{t("assistant")}</h2>{phase !== "done" && <Button size="compact" variant="quiet" onClick={onOpenResults} title={t("Решения, задачи и открытые вопросы")}>{t("meetingResults")}</Button>}</div>
+    <div className="assistant-history">
+      {!ready && messages.length > 0 && <p className="composer-status" role="status">{t("Помощник не подключён. ")}<Button variant="text" size="compact" loading={connecting} disabled={status.state === "connecting"} onClick={() => void connect()}>{t("signInChatGPT")}</Button></p>}
     {ready && phase !== "done" && <div className="assistant-toolbar"><Button variant="primary" size="compact" disabled={!replyTarget || busy} onClick={() => replyTarget && void ask("answer", "Предложи ответ на выбранную реплику собеседника.", replyTarget.id)} title={replyTarget ? t("Короткий ответ на последнюю реплику собеседника") : t("Дождитесь реплики собеседника")}>{t("suggestAnswer")}</Button>{replyTarget && <div className="assistant-reply-target" title={replyTarget.text}><time>{timestamp(replyTarget.startMs)}</time><span className="assistant-reply-excerpt">{replyTarget.text}</span></div>}</div>}
     <div className="assistant-messages" ref={area} onScroll={onScroll} aria-live="polite" aria-relevant="additions text"><div ref={body}>
       {messages.length === 0 && <div className="assistant-empty">
@@ -77,6 +79,7 @@ export function Assistant({ status, messages, hasSession, hasTranscript, phase, 
       </article>)}</div>
     </div>
     {awayFromBottom && messages.length > 0 && <div className="assistant-follow"><Button variant="text" size="compact" icon="down" onClick={followLatest}>{t("К последнему ответу")}</Button></div>}
+    </div>
     <form className="assistant-composer" onSubmit={event => { event.preventDefault(); void ask(webSearch ? "research" : "answer"); }}>
       <label className="composer-label" htmlFor="assistant-question">{phase === "done" ? t("Вопрос по записи") : t("askQuestion")}</label><TextArea id="assistant-question" placeholder={phase === "done" ? t("Например: что уточнить по итогам?") : t("Например: что уточнить про сроки?")} value={prompt} maxLength={12000} rows={2} disabled={!ready || busy} onChange={event => setPrompt(event.target.value)} onKeyDown={event => {
         if (event.key === "Enter" && !event.shiftKey && !event.repeat && !event.nativeEvent.isComposing && (enterToSend || event.ctrlKey || event.metaKey)) { event.preventDefault(); void ask(webSearch ? "research" : "answer"); }
@@ -84,7 +87,6 @@ export function Assistant({ status, messages, hasSession, hasTranscript, phase, 
       <div className="composer-actions"><Checkbox checked={webSearch} disabled={busy} onChange={event => setWebSearch(event.target.checked)}>{t("searchWeb")}</Checkbox>
         {busy ? <Button size="compact" icon="stop" disabled={!cancelId} onClick={() => void window.callme.agentCancel(cancelId).catch(e => onError(String(e)))}>{t("stop")}</Button> : <Button type="submit" variant="primary" size="compact" disabled={!ready || !prompt.trim()} title={enterToSend ? "Enter" : "Ctrl+Enter"}>{phase === "done" ? t("Спросить по записи") : t("send")}</Button>}
       </div>
-      {!ready && messages.length > 0 && <p className="composer-status" role="status">{t("Помощник не подключён. ")}<Button variant="text" size="compact" loading={connecting} disabled={status.state === "connecting"} onClick={() => void connect()}>{t("signInChatGPT")}</Button></p>}
     </form>
   </section>;
 }

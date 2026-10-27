@@ -1,0 +1,82 @@
+/* Both panes share content and composer tracks; text and controls set their size. */
+.workspace {
+  --workspace-inset: 24px;
+  --workspace-field-height: 68px;
+  grid-template-rows: auto minmax(0, 1fr) auto minmax(var(--workspace-field-height), auto) auto;
+}
+.workspace > .conversation,
+.workspace > .assistant-pane {
+  display: grid;
+  grid-row: 1 / -1;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: subgrid;
+}
+.workspace > .conversation { grid-column: 1; }
+.workspace > .assistant-pane { grid-column: 2; }
+.workspace .pane-header { grid-row: 1; padding-inline: var(--workspace-inset); }
+.conversation-history,
+.assistant-history {
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.workspace .transcript,
+.workspace .assistant-messages,
+.workspace .assistant-toolbar,
+.workspace .conversation-footer { padding-inline: var(--workspace-inset); }
+.workspace .quick-notes,
+.workspace .assistant-composer {
+  grid-row: 3 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: subgrid;
+  row-gap: 8px;
+  padding: 16px var(--workspace-inset);
+  margin: 0;
+  min-width: 0;
+}
+.workspace .quick-notes-heading,
+.workspace .composer-label {
+  grid-row: 1;
+  margin: 0;
+  align-self: start;
+}
+.workspace .quick-notes-heading h2,
+.workspace .composer-label {
+  color: var(--secondary);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: var(--weight-medium);
+}
+.workspace .quick-notes > .ui-textarea,
+.workspace .assistant-composer > .ui-textarea {
+  grid-row: 2;
+  min-height: var(--workspace-field-height);
+  height: 100%;
+  max-height: 160px;
+  margin: 0;
+}
+.workspace .quick-notes-actions,
+.workspace .composer-actions {
+  grid-row: 3;
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  margin: 0;
+}
+.workspace .composer-status { margin: 0; padding: 0 var(--workspace-inset) 12px; }
+.workspace .assistant-follow { padding-inline: var(--workspace-inset); }
+@media (max-width: 1080px) {
+  .workspace { --workspace-inset: 16px; }
+  .workspace .quick-notes,
+  .workspace .assistant-composer { padding-block: 12px; }
+}
+@media (max-height: 650px) {
+  .workspace { --workspace-field-height: 56px; }
+  .workspace .pane-header { min-height: 48px; }
+  .workspace .quick-notes,
+  .workspace .assistant-composer { padding-block: 12px; }
+}

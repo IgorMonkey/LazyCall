@@ -64,6 +64,8 @@ const screens = [
   ['assistant-projects-form-v7.png', 'Projects', 'New project form'],
   ['gallery-projects-edit.png', 'Projects', 'Edit project form'],
   ['gallery-meetings-list.png', 'Meetings', 'Saved meetings list'],
+  ['gallery-meetings-long-light.png', 'Meetings', 'Long history with a persistent title in the light theme'],
+  ['gallery-meetings-long-dark.png', 'Meetings', 'Long history with a persistent title at minimum width in the dark theme'],
   ['gallery-meetings-empty.png', 'Meetings', 'Empty saved-meetings state'],
   ['callme-transcript.png', 'Transcript', 'Saved transcript'],
   ['assistant-results-v7.png', 'Outcomes', 'Generated decisions, tasks, and questions'],
