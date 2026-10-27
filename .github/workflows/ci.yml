@@ -20,16 +20,19 @@ jobs:
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
+          package-manager-cache: false
       - name: Enable pinned Yarn
-        run: corepack enable
+        run: |
+          corepack enable
+          corepack yarn --version
       - name: Install dependencies
-        run: yarn install --immutable
+        run: corepack yarn install --immutable
       - name: Check version and PR title
         run: node scripts/check-release-policy.cjs
       - name: Build
-        run: yarn build
+        run: corepack yarn build
       - name: Test
-        run: yarn test
+        run: corepack yarn test
       - name: Check responsive header and onboarding
         shell: pwsh
         run: |
