@@ -8,6 +8,8 @@ import "@fontsource/scada/latin-700.css";
 import "./style.css";
 import "./interaction.css";
 import "./theme.css";
+import "./workspace-layout.css";
+import "./dialog-layout.css";
 import { applyTheme, cachedTheme } from "./theme";
 import { I18nProvider } from "./i18n";
 applyTheme(cachedTheme());

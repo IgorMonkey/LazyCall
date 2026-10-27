@@ -1,5 +1,19 @@
 # LazyCall changelog
 
+## 0.3.6 — workspace and dialog alignment
+
+- Shared grid for the transcript and assistant panes: aligned labels, text areas,
+  divider and action rows at supported desktop sizes.
+- Resizing the question field also resizes the notes row; long histories scroll
+  independently without moving the input controls.
+- Reconnection notices stay in the assistant history instead of shifting its form.
+- Consistent content spacing in project, history, outcome and transcript dialogs;
+  history titles and project actions stay visible while content scrolls.
+- Refreshed Russian/English screenshots in both themes and responsive geometry checks.
+
+The Windows builds remain unsigned. Clean-machine prerequisite installation and an
+actual upgrade through the published GitHub feed still need end-to-end verification.
+
 ## 0.3.5 — first public release
 
 - Optional discovery and selection of an installed Codex CLI.

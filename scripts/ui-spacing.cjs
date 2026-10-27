@@ -6,7 +6,33 @@ exports.checkSpacing = async (page, view, scopeSelector) => {
     const scope = scopeSelector ? document.querySelector(scopeSelector) : document;
     const shown = node => node.getClientRects().length && getComputedStyle(node).visibility !== 'hidden';
     const issues = []; let controls = 0, icons = 0;
+    const transcriptPane = document.querySelector('.conversation');
+    const assistantPane = document.querySelector('.assistant-pane');
+    if (transcriptPane && assistantPane && shown(transcriptPane) && shown(assistantPane)) {
+      const left = transcriptPane.getBoundingClientRect(), right = assistantPane.getBoundingClientRect();
+      if (Math.abs(left.top - right.top) < 1 && right.left >= left.right - 1) {
+        for (const [a, b, name] of [
+          ['.quick-notes', '.assistant-composer', 'composer boundaries'],
+          ['.quick-notes-heading', '.composer-label', 'field labels'],
+          ['.quick-notes > textarea', '#assistant-question', 'text fields'],
+          ['.quick-notes-actions', '.composer-actions', 'action rows']
+        ]) {
+          const first = document.querySelector(a), second = document.querySelector(b);
+          if (!first || !second) { issues.push(`${name}: missing paired element`); continue; }
+          const x = first.getBoundingClientRect(), y = second.getBoundingClientRect();
+          // A translated label can wrap; its top and the shared field row must align.
+          if (Math.abs(x.top - y.top) > 1 || (name !== 'field labels' && Math.abs(x.bottom - y.bottom) > 1)) issues.push(`${name}: paired panes do not align (${x.top}–${x.bottom} vs ${y.top}–${y.bottom})`);
+        }
+      }
+    }
     const header = document.querySelector('.app-header');
+    for (const dialog of scope.querySelectorAll('dialog[open]')) {
+      const bounds = dialog.getBoundingClientRect();
+      for (const element of dialog.querySelectorAll(':scope > .settings-heading, :scope > .settings-actions')) {
+        const box = element.getBoundingClientRect();
+        if (box.top < bounds.top - 1 || box.bottom > bounds.bottom + 1) issues.push(`${dialog.className}: title or actions leave dialog bounds`);
+      }
+    }
     if (header) for (const node of header.querySelectorAll('.brand, .meeting-heading, .header-actions, .header-actions > .button, .header-more-trigger')) {
       if (!shown(node)) continue;
       const box = node.getBoundingClientRect(), bounds = header.getBoundingClientRect();

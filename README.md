@@ -3,7 +3,7 @@
 [![CI](https://github.com/IgorMonkey/LazyCall/actions/workflows/ci.yml/badge.svg)](https://github.com/IgorMonkey/LazyCall/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/IgorMonkey/LazyCall?label=license)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D6)
-![Release](https://img.shields.io/badge/release-0.3.5-ff897a)
+![Release](https://img.shields.io/badge/release-0.3.6-ff897a)
 
 [**Download for Windows**](https://github.com/IgorMonkey/LazyCall/releases/latest)
 
@@ -22,13 +22,13 @@ LazyCall helps you recover the context of an AI-built project during a technical
 
 > **Experimental early release for Windows x64.** Expect bugs, delays, and suggestions that miss the point. Try it, report reproducible problems, and send PRs — contributions are welcome.
 
-## Download `0.3.5`
+## Download `0.3.6`
 
-Download assets from the [GitHub release](https://github.com/IgorMonkey/LazyCall/releases/tag/v0.3.5):
+Download assets from the [GitHub release](https://github.com/IgorMonkey/LazyCall/releases/tag/v0.3.6):
 
-- [`LazyCall-Web-Setup-0.3.5.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5/LazyCall-Web-Setup-0.3.5.exe) — about 820 KiB; downloads about 918 MiB during installation.
-- [`LazyCall-Setup-0.3.5.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5/LazyCall-Setup-0.3.5.exe) — about 919 MiB; includes the offline payload.
-- [`SHA256SUMS.txt`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5/SHA256SUMS.txt) — verify the file you download.
+- [`LazyCall-Web-Setup-0.3.6.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.6/LazyCall-Web-Setup-0.3.6.exe) — about 820 KiB; downloads about 918 MiB during installation.
+- [`LazyCall-Setup-0.3.6.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.6/LazyCall-Setup-0.3.6.exe) — about 919 MiB; includes the offline payload.
+- [`SHA256SUMS.txt`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.6/SHA256SUMS.txt) — verify the file you download.
 
 The installers are unsigned early-release builds. Windows may show a warning. Local installer checks covered install, corrupted-download retry, and uninstall; the GitHub update feed has not yet been validated end to end. Review the checksums and use this release only for testing.
 

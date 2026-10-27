@@ -3,7 +3,7 @@
 [![CI](https://github.com/IgorMonkey/LazyCall/actions/workflows/ci.yml/badge.svg)](https://github.com/IgorMonkey/LazyCall/actions/workflows/ci.yml)
 [![Лицензия](https://img.shields.io/github/license/IgorMonkey/LazyCall?label=%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D1%8F)](LICENSE)
 ![Платформа](https://img.shields.io/badge/%D0%BF%D0%BB%D0%B0%D1%82%D1%84%D0%BE%D1%80%D0%BC%D0%B0-Windows%20x64-0078D6)
-![Релиз](https://img.shields.io/badge/%D1%80%D0%B5%D0%BB%D0%B8%D0%B7-0.3.5-ff897a)
+![Релиз](https://img.shields.io/badge/%D1%80%D0%B5%D0%BB%D0%B8%D0%B7-0.3.6-ff897a)
 
 [**Скачать для Windows**](https://github.com/IgorMonkey/LazyCall/releases/latest)
 
@@ -24,13 +24,13 @@ LazyCall помогает восстановить контекст проект
 
 > **Экспериментальный ранний релиз для Windows x64.** Приложение ещё сырое: возможны баги, задержки и неудачные подсказки. Тестируйте, приносите воспроизводимые ошибки и присылайте PR — проект открыт для участия.
 
-## Скачать `0.3.5`
+## Скачать `0.3.6`
 
-Assets лежат в [GitHub release](https://github.com/IgorMonkey/LazyCall/releases/tag/v0.3.5):
+Assets лежат в [GitHub release](https://github.com/IgorMonkey/LazyCall/releases/tag/v0.3.6):
 
-- [`LazyCall-Web-Setup-0.3.5.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5/LazyCall-Web-Setup-0.3.5.exe) — около 820 КиБ; при установке скачивает около 918 МиБ.
-- [`LazyCall-Setup-0.3.5.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5/LazyCall-Setup-0.3.5.exe) — около 919 МиБ; содержит офлайн-payload.
-- [`SHA256SUMS.txt`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5/SHA256SUMS.txt) — проверьте скачанный файл.
+- [`LazyCall-Web-Setup-0.3.6.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.6/LazyCall-Web-Setup-0.3.6.exe) — около 820 КиБ; при установке скачивает около 918 МиБ.
+- [`LazyCall-Setup-0.3.6.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.6/LazyCall-Setup-0.3.6.exe) — около 919 МиБ; содержит офлайн-payload.
+- [`SHA256SUMS.txt`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.6/SHA256SUMS.txt) — проверьте скачанный файл.
 
 Это неподписанные ранние установщики, поэтому Windows может показать предупреждение. Локально проверены установка, повтор после повреждённой загрузки и удаление; GitHub update feed пока не прошёл end-to-end проверку. Сверяйте checksums и используйте этот релиз только для тестирования.
 

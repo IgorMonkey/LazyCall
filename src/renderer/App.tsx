@@ -348,6 +348,7 @@ export function App() {
     <main className="workspace">
       <section className="conversation" aria-label={t("Расшифровка встречи")}>
         <div className="pane-header"><h2>{t("Расшифровка")}</h2><Materials source={source} preview={preview} frameAt={frameAt} phase={phase} epoch={sessionEpoch} project={workspace.project} onSnapshot={() => { if (!capture.current?.snapshot()) report(t("Кадр пока недоступен. Повторите через секунду."), "info"); }} onChooseWindow={phase === "idle" ? () => window.setTimeout(() => document.getElementById("meeting-window")?.focus(), 0) : undefined} /></div>
+        <div className="conversation-history">
         <div className="transcript" ref={transcript} onScroll={onTranscriptScroll}>
           <div ref={transcriptBody}>
           {lines.length === 0 ? <div className="empty-transcript">
@@ -362,7 +363,8 @@ export function App() {
           </div>
         </div>
         {awayFromBottom && lines.length > 0 && <div className="conversation-footer"><Button variant="text" icon="down" onClick={followLatest}>{t("К последней реплике")}</Button></div>}
-        <section className="quick-notes" aria-label={t("Заметки встречи")}><div className="quick-notes-heading"><h2>{t("Заметки")}</h2><span className={"secondary-label note-state " + noteState}>{noteLabel}</span></div><TextArea aria-label={t("Заметки")} placeholder={t("Записать важное…")} rows={2} value={note} onChange={event => setNote(event.target.value)} maxLength={100000} spellCheck /></section>
+        </div>
+        <section className="quick-notes" aria-label={t("Заметки встречи")}><div className="quick-notes-heading"><h2>{t("Заметки")}</h2></div><TextArea aria-label={t("Заметки")} placeholder={t("Записать важное…")} rows={2} value={note} onChange={event => setNote(event.target.value)} maxLength={100000} spellCheck /><div className="quick-notes-actions"><span className={"secondary-label note-state " + noteState}>{noteLabel}</span></div></section>
       </section>
 
       <Assistant status={agent} messages={assistantMessages} hasSession={hasSession} hasTranscript={lines.length > 0} phase={phase} enterToSend={preferences.enterToSend} replyTarget={[...lines].reverse().find(line => line.source === "remote")} sessionEpoch={sessionEpoch} note={note} onPrepared={id => { sessionId.current = id; noteSaved.current = note; setHasSession(true); }} onAddNote={text => { const combined = note.trim() ? note.trimEnd() + "\n\n" + text : text; if (combined.length > 100000) { report("В заметках недостаточно места для этого ответа."); return; } setNote(combined); report("Добавлено в заметки.", "info"); }} onError={report} onOpenResults={() => setResultsOpen(old => old + 1)} />

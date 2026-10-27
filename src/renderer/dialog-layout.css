@@ -1,0 +1,21 @@
+/* Keep the title and actions visible while long dialog content scrolls. */
+.meetings-dialog { overflow: hidden; }
+.meetings-dialog[open] { display: flex; flex-direction: column; }
+.meetings-dialog .settings-heading,
+.projects-dialog .settings-actions { flex-shrink: 0; }
+.meetings-dialog .meetings-list {
+  min-height: 0;
+  overflow-y: auto;
+}
+.projects-body,
+.results-body,
+.meetings-dialog .meetings-list,
+.transcript-edit-body { padding: 24px; overscroll-behavior: contain; }
+.projects-body .field:first-child { margin-top: 0; }
+.results-actions { flex-wrap: wrap; gap: 8px; }
+@media (max-width: 700px) {
+  .projects-body,
+  .results-body,
+  .meetings-dialog .meetings-list,
+  .transcript-edit-body { padding: 16px; }
+}

@@ -33,10 +33,11 @@ jobs:
         run: corepack yarn build
       - name: Test
         run: corepack yarn test
-      - name: Check responsive header and onboarding
+      - name: Check responsive header, onboarding and workspace alignment
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           $PSNativeCommandUseErrorActionPreference = $true
           node scripts/check-assistant-ui.cjs --header
           node scripts/check-assistant-ui.cjs --onboarding
+          node scripts/check-assistant-ui.cjs --spacing

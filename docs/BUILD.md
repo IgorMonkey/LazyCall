@@ -2,7 +2,7 @@
 
 [Русский](BUILD.ru.md)
 
-This guide describes the current Windows x64 public-review pipeline for version `0.3.5`. It creates review artifacts only; it does not publish a GitHub Release or make an update available to users.
+This guide describes the current Windows x64 public-review pipeline for version `0.3.6`. It creates review artifacts only; it does not publish a GitHub Release or make an update available to users.
 
 ## Development checks
 
