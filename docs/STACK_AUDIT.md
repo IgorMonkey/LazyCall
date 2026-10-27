@@ -97,7 +97,7 @@ Registry latest — наблюдение на дату аудита, не гот
 | Компонент | Наблюдение | Начальное решение | Уровень проверки |
 | --- | --- | --- | --- |
 | Системный Node | 24.13.0 | Использовать для разработки | --version |
-| npm | 11.6.2 | Один package-lock.json, npm ci после создания проекта | --version |
+| Yarn | 4.13.0 | Обновлено 27 октября: yarn.lock, точные прямые версии, yarn install --immutable | yarn --version |
 | Electron | latest 45.0.0; доступен 44.9.1 | **44.9.1 как baseline spike**, обновлять по поддерживаемым patch-релизам | Metadata, .d.ts и release feed; бинарник не запускался |
 | Bundled Node Electron 44.9.1 | 24.22.0, Chromium 152.0.7977.167, modules ABI 149 | Проверять внутри самого Electron при S1/S5 | Официальный release feed, не runtime-проверка |
 | React / react-dom | 19.3.1 / 19.3.1 | Совпадающая пара 19.3.1 | npm metadata, peer react-dom совпадает |

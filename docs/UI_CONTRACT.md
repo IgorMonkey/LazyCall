@@ -69,7 +69,7 @@ Enter отправляет текст по умолчанию, Shift+Enter пе�
 
 ## Проверка
 
-После изменения renderer выполняют `npm run build` и нужные целевые smoke-проверки. UI fixture не использует реальный аудиозахват или облачную модель; успешный fixture не означает проверку входа, реального созвона или portable-сборки.
+После изменения renderer выполняют `yarn build` и нужные целевые smoke-проверки. UI fixture не использует реальный аудиозахват или облачную модель; успешный fixture не означает проверку входа, реального созвона или portable-сборки.
 
 Правила видимости состояния и узнавания вместо запоминания опираются на [NN/g](https://www.nngroup.com/articles/visibility-system-status/) и [сводку эвристик](https://www.nngroup.com/articles/ten-usability-heuristics/). Пользовательская проверка AI-черновика согласуется с описанием Granola [enhanced notes](https://help.granola.ai/article/ai-enhanced-notes): автоматизация помогает оформить расшифровку, но не заменяет оценку человека.
 

@@ -3,6 +3,7 @@ name: CI
 on:
   push:
   pull_request:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
 
 permissions:
   contents: read
@@ -19,13 +20,16 @@ jobs:
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-          cache: npm
+      - name: Enable pinned Yarn
+        run: corepack enable
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --immutable
+      - name: Check version and PR title
+        run: node scripts/check-release-policy.cjs
       - name: Build
-        run: npm run build
+        run: yarn build
       - name: Test
-        run: npm test
+        run: yarn test
       - name: Check responsive header and onboarding
         shell: pwsh
         run: |

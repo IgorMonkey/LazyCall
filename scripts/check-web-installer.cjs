@@ -109,6 +109,21 @@ async function assertPreviewLaunch(installDirectory, temporaryParent) {
   }
 }
 
+async function assertEventuallyMissing(file) {
+  let lastError;
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    try {
+      await access(file);
+      await new Promise(resolve => setTimeout(resolve, 250));
+    } catch (error) {
+      if (error.code === "ENOENT") return;
+      lastError = error;
+      break;
+    }
+  }
+  throw lastError || new Error("Preview uninstaller did not remove " + file);
+}
+
 async function assertVCRuntimePresent() {
   const result = await run("powershell.exe", [
     "-NoProfile", "-NonInteractive", "-Command",
@@ -171,7 +186,7 @@ async function findInstaller(manifest) {
     assert.ok(uninstallerPath.toLowerCase().startsWith(installDirectory.toLowerCase() + path.sep), "Uninstaller must stay in the owned preview directory");
     result = await run(uninstallerPath, ["/S"]);
     assert.equal(result.code, 0, "Preview uninstall failed: " + result.stderr);
-    await assert.rejects(access(path.join(installDirectory, "LazyCallWebPreview.exe")));
+    await assertEventuallyMissing(path.join(installDirectory, "LazyCallWebPreview.exe"));
     console.log(JSON.stringify({ status: "passed", installer, installDirectory: "removed", stageFiles: stageFiles.size }));
   } finally {
     await stop(server);

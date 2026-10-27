@@ -1,4 +1,6 @@
-# Переносимая сборка Windows
+# Архив: локальная переносимая сборка Windows
+
+> Историческая инструкция для разработчика. Для актуальной публичной поставки используйте [BUILD.ru.md](BUILD.ru.md); описанные здесь старые сборки с app-local VC DLL и Codex не публикуются.
 
 Сборка предназначена для Windows x64. Запускать нужно `CallMe.exe` из всей папки
 `release/win-unpacked`: рядом лежат Electron и встроенный Whisper. Копировать один
@@ -10,14 +12,14 @@ EXE недостаточно. Для распознавания на друго�
 ## Подготовка разработчиком
 
 ```powershell
-npm ci
-npm run setup
-npm run pack
+yarn install --immutable
+yarn setup
+yarn pack
 ```
 
 ## Обычный установщик
 
-`npm run dist:win` собирает офлайн-установщик NSIS в
+`yarn dist:win` собирает офлайн-установщик NSIS в
 `release/compact-offline`. Это не web-installer и не механизм обновлений:
 CPU/CUDA runtime Whisper, модель и лицензии находятся внутри пакета. Установщик
 русскоязычный, пошаговый и по умолчанию устанавливает программу для текущего
@@ -36,7 +38,7 @@ CPU/CUDA runtime Whisper, модель и лицензии находятся в
 ```powershell
 node scripts/build-installer.cjs --prepackaged release/ui-spacing/win-unpacked
 $env:CALLME_INSTALLER_PAYLOAD='1'
-npm run test:installer
+yarn test:installer
 ```
 
 Перепаковка сверяет все исходные и выходные файлы по размеру и SHA256. Проверка
@@ -77,16 +79,16 @@ REDIST-лист.
 
 ```powershell
 node scripts/create-speech-fixture.cjs
-npm run build
+yarn build
 node scripts/check-runtime.cjs
 node scripts/smoke-desktop.cjs
 node scripts/check-settings.cjs
 node scripts/check-ui.cjs
-npm run pack
+yarn pack
 node scripts/check-packaged.cjs
-npm run dist:win
-npm run test:installer
-npm test
+yarn dist:win
+yarn test:installer
+yarn test
 ```
 
 Генератор WAV использует установленный русский системный голос Microsoft Irina

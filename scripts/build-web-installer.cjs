@@ -293,7 +293,7 @@ async function createPayload(stage, destination, payloadName) {
         );
       }
       await run(process.execPath, [cli, ...fullConfig, ...identity, "--publish", "never"]);
-      fullInstaller = path.join(output, "nsis", (options.localPreview ? "LazyCallWebPreview" : "LazyCall") + " Setup " + stage.version + ".exe");
+      fullInstaller = path.join(output, (options.localPreview ? "LazyCallWebPreview" : "LazyCall") + " Setup " + stage.version + ".exe");
       await stat(fullInstaller);
     }
   } finally {

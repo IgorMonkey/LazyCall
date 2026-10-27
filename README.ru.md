@@ -1,11 +1,14 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/lazycall-lockup-light.svg">
-  <img src="assets/lazycall-lockup.svg" width="280" alt="LazyCall">
-</picture>
-
 # LazyCall
 
 [![CI](https://github.com/IgorMonkey/LazyCall/actions/workflows/ci.yml/badge.svg)](https://github.com/IgorMonkey/LazyCall/actions/workflows/ci.yml)
+[![Лицензия](https://img.shields.io/github/license/IgorMonkey/LazyCall?label=%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D1%8F)](LICENSE)
+![Платформа](https://img.shields.io/badge/%D0%BF%D0%BB%D0%B0%D1%82%D1%84%D0%BE%D1%80%D0%BC%D0%B0-Windows%20x64-0078D6)
+![Релиз](https://img.shields.io/badge/%D1%80%D0%B5%D0%BB%D0%B8%D0%B7-0.3.5--alpha.1-ff897a)
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/main-dark.png">
+  <img src="docs/screenshots/main-light.png" alt="LazyCall: расшифровка, вариант ответа и итоги встречи" width="960">
+</picture>
 
 **Нейрослоп для нейрослопа.**
 
@@ -18,6 +21,16 @@ LazyCall помогает восстановить контекст проект
 [English](README.md) · [Скриншоты](docs/SCREENSHOTS.ru.md) · [Как помочь](CONTRIBUTING.ru.md) · [Приватность](docs/PRIVACY.ru.md) · [Планы](docs/ROADMAP.ru.md)
 
 > **Экспериментальная альфа для Windows x64.** Приложение ещё сырое: возможны баги, задержки и неудачные подсказки. Тестируйте, приносите воспроизводимые ошибки и присылайте PR — проект открыт для участия.
+
+## Скачать `0.3.5-alpha.1`
+
+Assets лежат в [GitHub release](https://github.com/IgorMonkey/LazyCall/releases/tag/v0.3.5-alpha.1):
+
+- [`LazyCall-Web-Setup-0.3.5-alpha.1.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5-alpha.1/LazyCall-Web-Setup-0.3.5-alpha.1.exe) — около 820 КиБ; при установке скачивает около 918 МиБ.
+- [`LazyCall-Setup-0.3.5-alpha.1.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5-alpha.1/LazyCall-Setup-0.3.5-alpha.1.exe) — около 919 МиБ; содержит офлайн-payload.
+- [`SHA256SUMS.txt`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5-alpha.1/SHA256SUMS.txt) — проверьте скачанный файл.
+
+Это неподписанные ранние alpha-установщики, поэтому Windows может показать предупреждение. Локально проверены установка, повтор после повреждённой загрузки и удаление; GitHub update feed пока не прошёл end-to-end проверку. Сверяйте checksums и используйте этот релиз только для тестирования.
 
 ## Что умеет
 
@@ -53,15 +66,17 @@ Claude Code, прямые API OpenAI и Anthropic, OpenRouter, другие Open
 
 ## Запуск из исходников
 
-Для разработки нужны **Windows x64**, **Node.js 24 LTS** и npm.
+Для разработки нужны **Windows x64**, **Node.js 24 LTS**, Corepack и Yarn **4.13.0**.
 
 ```powershell
-npm ci
-npm run build
-npm test
+corepack enable
+yarn --version
+yarn install --immutable
+yarn build
+yarn test
 ```
 
-`npm run setup` загружает закреплённые runtime и речевую модель для разработки. Сборка приложения, онлайн-установщик и проверки описаны в [инструкции сборки](docs/BUILD.ru.md).
+`yarn setup` загружает закреплённые runtime и речевую модель для разработки. Сборка приложения, онлайн-установщик и проверки описаны в [инструкции сборки](docs/BUILD.ru.md).
 
 ## Статус и ограничения
 
@@ -72,7 +87,19 @@ npm test
 - Облачные подсказки требуют доступного провайдера и используют его лимиты.
 - Первый поиск по незнакомому репозиторию может быть медленнее повторного.
 - Интерфейс доступен на русском и английском; есть светлая, тёмная и системная темы.
-- Проверка онлайн-установщика ещё не завершена. Конфигурация alpha-обновлений есть локально, но update feed ещё не опубликован.
+- Это неподписанные ранние alpha-установщики. GitHub update feed ещё не прошёл end-to-end проверку.
+
+<details>
+<summary>Компактное окно</summary>
+
+<img src="docs/screenshots/compact-live.png" alt="Компактное окно LazyCall с целевой репликой" width="404">
+</details>
+
+<details>
+<summary>Итоги встречи</summary>
+
+<img src="docs/screenshots/assistant-results-v7.png" alt="Итоги LazyCall с решениями, задачами и основаниями" width="960">
+</details>
 
 ## Как помочь
 

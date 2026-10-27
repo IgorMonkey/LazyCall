@@ -125,6 +125,31 @@ const assert = require('node:assert/strict');
     });
     await page.goto('http://127.0.0.1:' + server.address().port);
     await page.evaluate(() => document.fonts.ready);
+    if (process.argv.includes('--gallery-extra')) {
+      await fs.mkdir('test-results', { recursive: true });
+      const shot = name => page.screenshot({ path: `test-results/gallery-${name}.png`, animations: 'disabled' });
+      await shot('assistant-empty');
+      await page.getByRole('button', { name: 'Настройки', exact: true }).click();
+      for (const [tab, name] of [['Запись', 'settings-recording'], ['Помощник', 'settings-assistant'], ['Данные', 'settings-data'], ['Вид', 'settings-appearance'], ['Обновления', 'settings-updates-unconfigured']]) {
+        await page.getByRole('tab', { name: tab, exact: true }).click(); await shot(name);
+      }
+      await page.evaluate(() => window.uiFixture.emit('updateStatus', { state: 'downloading', currentVersion: '0.3.5-alpha.1', version: '0.3.5-alpha.2', percent: 42, transferred: 42000000, total: 100000000 }));
+      await page.getByText(/42%/).waitFor(); await shot('settings-updates-progress');
+      await page.evaluate(() => window.uiFixture.emit('updateStatus', { state: 'error', currentVersion: '0.3.5-alpha.1', message: 'Не удалось получить обновление. Проверьте подключение и повторите попытку.' }));
+      await page.getByText('Не удалось получить обновление. Проверьте подключение и повторите попытку.', { exact: true }).waitFor(); await shot('settings-updates-error');
+      await page.keyboard.press('Escape');
+      await page.getByRole('button', { name: 'Встречи', exact: true }).click(); await page.getByText('Поиск заявки', { exact: true }).waitFor(); await shot('meetings-list');
+      await page.keyboard.press('Escape');
+      await page.evaluate(() => { window.callme.listMeetings = async () => []; });
+      await page.getByRole('button', { name: 'Встречи', exact: true }).click(); await page.getByText('Здесь будут сохранённые встречи.', { exact: true }).waitFor(); await shot('meetings-empty');
+      await page.keyboard.press('Escape');
+      await page.getByRole('button', { name: 'Без проекта', exact: true }).click();
+      await page.getByRole('button', { name: 'Изменить проект Поиск заявок', exact: true }).click(); await page.getByRole('heading', { name: 'Изменить проект', exact: true }).waitFor(); await shot('projects-edit');
+      await page.keyboard.press('Escape');
+      await page.getByRole('button', { name: 'Итоги встречи', exact: true }).first().click(); await page.getByText('Пока нет расшифровки.', { exact: true }).waitFor(); await page.getByRole('button', { name: 'Добавить пункт вручную', exact: true }).click(); await shot('results-empty-manual');
+      await page.keyboard.press('Escape');
+      assert.deepEqual(errors, []); console.log(JSON.stringify({ status: 'passed', gallery: ['assistant empty', 'five settings tabs', 'update progress/error', 'meetings list/empty', 'project edit', 'manual result'] })); return;
+    }
     if (process.argv.includes('--header')) {
       await fs.mkdir('test-results', { recursive: true });
       const { checkSpacing } = require('./ui-spacing.cjs');
@@ -273,6 +298,7 @@ const assert = require('node:assert/strict');
       assert.equal(await page.evaluate(() => window.uiFixture.requests.length), 0);
       await openGuide('Как пользоваться');
       await page.keyboard.press('Escape');
+      await page.waitForFunction(() => document.activeElement?.classList.contains('header-more-trigger'));
       assert.equal(await page.locator('.header-more-trigger').evaluate(node => document.activeElement === node), true);
       await page.getByRole('button', { name: 'Настройки', exact: true }).click();
       await page.getByRole('tab', { name: 'Вид', exact: true }).click();

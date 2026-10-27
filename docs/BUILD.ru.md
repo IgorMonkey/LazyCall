@@ -6,12 +6,14 @@
 
 ## Проверки разработки
 
-Нужны Windows x64, Node.js 24 LTS и npm.
+Нужны Windows x64, Node.js 24 LTS, Corepack и Yarn 4.13.0. Репозиторий закрепляет эту точную версию Yarn через `packageManager`; Corepack-подбор подтверждает `yarn --version`. `nodeLinker: node-modules` оставлен намеренно для Electron tooling.
 
 ```powershell
-npm ci
-npm run build
-npm test
+corepack enable
+yarn --version
+yarn install --immutable
+yarn build
+yarn test
 ```
 
 Эти проверки не требуют входа в ChatGPT, реальных данных встречи, микрофона или обращения к облачной модели.
@@ -21,7 +23,7 @@ npm test
 Создайте свежую облегчённую staging-папку:
 
 ```powershell
-npm run pack:public
+yarn pack:public
 ```
 
 Команда записывает `release/public-review/win-unpacked` для текущей версии приложения. В этой стадии намеренно нет встроенного Codex и четырёх app-local DLL Microsoft VC Runtime. Остаются локальная модель Whisper и CPU/CUDA-бинарники. Вместо встроенного Codex LazyCall находит установленный нативный CLI или даёт выбрать `codex.exe`; web-установщик получает одобренный Microsoft VC Runtime во время установки.
@@ -41,7 +43,7 @@ node scripts/check-packaged.cjs
 Соберите установщик и payload только для loopback:
 
 ```powershell
-npm run dist:web -- --prepackaged release/public-review/win-unpacked --local-preview --review-download-only
+yarn dist:web --prepackaged release/public-review/win-unpacked --local-preview --review-download-only
 ```
 
 Установщик будет обращаться только к `http://127.0.0.1:38473`. В отдельном терминале запустите выдачу payload:
@@ -58,8 +60,8 @@ node scripts/serve-web-preview.cjs
 
 ```powershell
 $env:CALLME_RELEASE_REPOSITORY = 'IgorMonkey/LazyCall'
-npm run pack:public
-npm run dist:web -- --prepackaged release/public-review/win-unpacked --full-installer
+yarn pack:public
+yarn dist:web --prepackaged release/public-review/win-unpacked --full-installer
 ```
 
 Сборка проверяет формат `owner/repository` и записывает в staging GitHub-provider update feed для точного репозитория. Так как эта версия — prerelease, semver-конфигурация приложения после публикации использует соответствующий feed `alpha.yml`. Вызовы Electron Builder идут с `--publish never`: команды собирают файлы локально и не создают репозиторий, не загружают ассеты, не публикуют релиз и не включают обновления.
@@ -68,4 +70,4 @@ npm run dist:web -- --prepackaged release/public-review/win-unpacked --full-inst
 
 ## Не используйте старые офлайн-артефакты как публичные
 
-`npm run dist:win` и прежний setup разработки содержат app-local DLL Microsoft VC Runtime и в офлайн-пути — Codex. Они полезны для разработки и исторической проверки, но не одобрены как публичные ассеты этого pipeline. Не загружайте `runtime/`, старые локальные установщики или любой артефакт из `release/` без указанного выше релизного ревью.
+`yarn dist:win` и прежний setup разработки содержат app-local DLL Microsoft VC Runtime и в офлайн-пути — Codex. Они полезны для разработки и исторической проверки, но не одобрены как публичные ассеты этого pipeline. Не загружайте `runtime/`, старые локальные установщики или любой артефакт из `release/` без указанного выше релизного ревью.

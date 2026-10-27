@@ -6,12 +6,14 @@ This guide describes the current Windows x64 public-review pipeline for version 
 
 ## Development checks
 
-Use Windows x64, Node.js 24 LTS, and npm.
+Use Windows x64, Node.js 24 LTS, Corepack, and Yarn 4.13.0. The repository pins that exact Yarn version through `packageManager`; `yarn --version` confirms the Corepack-selected release. `nodeLinker: node-modules` is intentional for Electron tooling.
 
 ```powershell
-npm ci
-npm run build
-npm test
+corepack enable
+yarn --version
+yarn install --immutable
+yarn build
+yarn test
 ```
 
 These checks do not need a ChatGPT login, real meeting data, a microphone, or a cloud-model call.
@@ -21,7 +23,7 @@ These checks do not need a ChatGPT login, real meeting data, a microphone, or a 
 Create the fresh light staging folder with:
 
 ```powershell
-npm run pack:public
+yarn pack:public
 ```
 
 It writes `release/public-review/win-unpacked` for the current app version. This stage deliberately excludes bundled Codex and the four app-local Microsoft VC runtime DLLs. It keeps the local Whisper model and CPU/CUDA binaries. LazyCall instead discovers a native installed Codex CLI or lets the user choose `codex.exe`; the web installer obtains the approved Microsoft VC runtime during installation.
@@ -41,7 +43,7 @@ The local public-review stage, installed-Codex flow, and English/Russian UI have
 Build a loopback-only installer and payload:
 
 ```powershell
-npm run dist:web -- --prepackaged release/public-review/win-unpacked --local-preview --review-download-only
+yarn dist:web --prepackaged release/public-review/win-unpacked --local-preview --review-download-only
 ```
 
 The generated installer points only to `http://127.0.0.1:38473`. Serve its payload in a separate terminal:
@@ -58,8 +60,8 @@ Use a GitHub repository name only after the release destination has been reviewe
 
 ```powershell
 $env:CALLME_RELEASE_REPOSITORY = 'IgorMonkey/LazyCall'
-npm run pack:public
-npm run dist:web -- --prepackaged release/public-review/win-unpacked --full-installer
+yarn pack:public
+yarn dist:web --prepackaged release/public-review/win-unpacked --full-installer
 ```
 
 The build validates this `owner/repository` value and writes the staged GitHub-provider update feed for that exact repository. Because this version is a prerelease, the app's semantic-version configuration resolves the matching `alpha.yml` feed after publication. Its underlying Electron-builder calls use `--publish never`: these commands build files locally and do not create a repository, upload assets, publish a release, or enable updates.
@@ -68,4 +70,4 @@ The online installer still needs real end-to-end validation on a suitable clean 
 
 ## Do not use old offline artifacts as public assets
 
-`npm run dist:win` and the older development setup bundle app-local Microsoft VC DLLs and, in the offline path, Codex. They are useful for development and historical validation, but they are not approved public assets for this pipeline. Do not upload `runtime/`, old local installers, or any `release/` artifact without the release review described above.
+`yarn dist:win` and the older development setup bundle app-local Microsoft VC DLLs and, in the offline path, Codex. They are useful for development and historical validation, but they are not approved public assets for this pipeline. Do not upload `runtime/`, old local installers, or any `release/` artifact without the release review described above.

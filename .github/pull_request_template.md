@@ -8,8 +8,8 @@ Describe the resulting behaviour. Include a before/after example when useful.
 
 ## Testing
 
-- [ ] `npm run build`
-- [ ] `npm test`
+- [ ] `yarn build`
+- [ ] `yarn test`
 - [ ] Relevant focused or manual checks are described below
 
 ## Evidence

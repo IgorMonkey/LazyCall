@@ -6,25 +6,25 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "build": "tsc -p tsconfig.main.json && tsc -p tsconfig.json && vite build",
-    "start": "npm run build && electron .",
+    "start": "yarn build && electron .",
     "setup:whisper": "node scripts/setup-whisper.mjs && node scripts/setup-vc-runtime.mjs",
     "setup:vc-runtime": "node scripts/setup-vc-runtime.mjs",
     "setup:codex": "node scripts/setup-codex.mjs",
-    "setup": "npm run setup:whisper && npm run setup:codex",
+    "setup": "yarn setup:whisper && yarn setup:codex",
     "test": "node --test tests/*.test.cjs",
-    "test:desktop": "npm run build && node scripts/smoke-desktop.cjs",
-    "test:settings": "npm run build && node scripts/check-settings.cjs",
-    "test:ui": "npm run build && node scripts/check-ui.cjs",
-    "test:runtime": "npm run build && node scripts/check-runtime.cjs",
-    "test:assistant-ui": "npm run build && node scripts/check-assistant-ui.cjs",
-    "test:assistant-desktop": "npm run build && node scripts/check-assistant-desktop.cjs",
-    "test:projects": "npm run build && node scripts/check-projects-results.cjs",
-    "test:interactions": "npm run build && node scripts/check-interactions.cjs",
-    "test:follow": "npm run build && node scripts/check-assistant-ui.cjs --transcript-follow",
+    "test:desktop": "yarn build && node scripts/smoke-desktop.cjs",
+    "test:settings": "yarn build && node scripts/check-settings.cjs",
+    "test:ui": "yarn build && node scripts/check-ui.cjs",
+    "test:runtime": "yarn build && node scripts/check-runtime.cjs",
+    "test:assistant-ui": "yarn build && node scripts/check-assistant-ui.cjs",
+    "test:assistant-desktop": "yarn build && node scripts/check-assistant-desktop.cjs",
+    "test:projects": "yarn build && node scripts/check-projects-results.cjs",
+    "test:interactions": "yarn build && node scripts/check-interactions.cjs",
+    "test:follow": "yarn build && node scripts/check-assistant-ui.cjs --transcript-follow",
     "test:packaged": "node scripts/check-packaged.cjs",
-    "pack": "npm run build && electron-builder --win dir",
-    "dist:win": "npm run build && node scripts/build-installer.cjs",
-    "pack:public": "npm run build && node scripts/build-public-stage.cjs",
+    "pack": "yarn build && electron-builder --win dir",
+    "dist:win": "yarn build && node scripts/build-installer.cjs",
+    "pack:public": "yarn build && node scripts/build-public-stage.cjs",
     "dist:web": "node scripts/build-web-installer.cjs",
     "test:installer": "node scripts/check-installer.cjs"
   },
@@ -35,12 +35,12 @@
     "react-dom": "19.3.1"
   },
   "devDependencies": {
-    "@types/node": "^24.9.0",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
     "electron": "44.9.1",
-    "electron-builder": "^26.0.12",
+    "electron-builder": "26.18.0",
     "playwright": "1.64.1",
     "typescript": "6.0.3",
     "vite": "8.3.5"
@@ -122,5 +122,6 @@
   "homepage": "https://github.com/IgorMonkey/LazyCall#readme",
   "bugs": {
     "url": "https://github.com/IgorMonkey/LazyCall/issues"
-  }
+  },
+  "packageManager": "yarn@4.13.0"
 }

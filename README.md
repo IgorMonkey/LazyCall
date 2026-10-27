@@ -1,11 +1,14 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/lazycall-lockup-light.svg">
-  <img src="assets/lazycall-lockup.svg" width="280" alt="LazyCall">
-</picture>
-
 # LazyCall
 
 [![CI](https://github.com/IgorMonkey/LazyCall/actions/workflows/ci.yml/badge.svg)](https://github.com/IgorMonkey/LazyCall/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/IgorMonkey/LazyCall?label=license)](LICENSE)
+![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D6)
+![Release](https://img.shields.io/badge/release-0.3.5--alpha.1-ff897a)
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/main-dark.png">
+  <img src="docs/screenshots/main-light.png" alt="LazyCall: transcript, reply draft, and meeting outcomes" width="960">
+</picture>
 
 **You generated the code. Now explain it.**
 
@@ -16,6 +19,16 @@ LazyCall helps you recover the context of an AI-built project during a technical
 [Русский](README.ru.md) · [Screenshots](docs/SCREENSHOTS.md) · [Contributing](CONTRIBUTING.md) · [Privacy](docs/PRIVACY.md) · [Roadmap](docs/ROADMAP.md)
 
 > **Experimental alpha for Windows x64.** Expect bugs, delays, and suggestions that miss the point. Try it, report reproducible problems, and send PRs — contributions are welcome.
+
+## Download `0.3.5-alpha.1`
+
+Download assets from the [GitHub release](https://github.com/IgorMonkey/LazyCall/releases/tag/v0.3.5-alpha.1):
+
+- [`LazyCall-Web-Setup-0.3.5-alpha.1.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5-alpha.1/LazyCall-Web-Setup-0.3.5-alpha.1.exe) — about 820 KiB; downloads about 918 MiB during installation.
+- [`LazyCall-Setup-0.3.5-alpha.1.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5-alpha.1/LazyCall-Setup-0.3.5-alpha.1.exe) — about 919 MiB; includes the offline payload.
+- [`SHA256SUMS.txt`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5-alpha.1/SHA256SUMS.txt) — verify the file you download.
+
+The installers are unsigned early-alpha builds. Windows may show a warning. Local installer checks covered install, corrupted-download retry, and uninstall; the GitHub update feed has not yet been validated end to end. Review the checksums and use this release only for testing.
 
 ## What it does
 
@@ -51,15 +64,17 @@ Record calls only with the consent required for the participants and jurisdictio
 
 ## Build from source
 
-Development requires **Windows x64**, **Node.js 24 LTS**, and npm.
+Development requires **Windows x64**, **Node.js 24 LTS**, Corepack, and Yarn **4.13.0**.
 
 ```powershell
-npm ci
-npm run build
-npm test
+corepack enable
+yarn --version
+yarn install --immutable
+yarn build
+yarn test
 ```
 
-`npm run setup` downloads pinned development runtimes and a speech model. App packaging, the online installer, and validation are described in [the build guide](docs/BUILD.md).
+`yarn setup` downloads pinned development runtimes and a speech model. App packaging, the online installer, and validation are described in [the build guide](docs/BUILD.md).
 
 ## Status and limitations
 
@@ -70,7 +85,19 @@ This is an early open-source project still being tested on real calls. A suggest
 - Cloud reply drafts require an available provider and use that provider's limits.
 - A first lookup in an unfamiliar repository can be slower than a later one.
 - The interface supports English and Russian, with light, dark, and system themes.
-- Online-installer validation is not complete. The alpha update configuration exists locally, but no update feed has been published.
+- The installers are unsigned early-alpha builds. The GitHub update feed is not yet validated end to end.
+
+<details>
+<summary>Compact window</summary>
+
+<img src="docs/screenshots/compact-live.png" alt="LazyCall compact window with the reply target" width="404">
+</details>
+
+<details>
+<summary>Meeting outcomes</summary>
+
+<img src="docs/screenshots/assistant-results-v7.png" alt="LazyCall outcomes with decisions, tasks, and evidence" width="960">
+</details>
 
 ## Contributing
 

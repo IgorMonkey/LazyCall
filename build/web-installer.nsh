@@ -113,8 +113,10 @@ LangString CallMePreviewRenameFailed 1049 "Не удалось подготов�
 !undef StdUtils.GetParameter
 !define StdUtils.GetParameter '!insertmacro CallMeGetParameter'
 
-Var /GLOBAL CallMePackagePrepared
-Var /GLOBAL CallMePackageFile
+!ifdef APP_PACKAGE_URL
+  Var /GLOBAL CallMePackagePrepared
+  Var /GLOBAL CallMePackageFile
+!endif
 Var /GLOBAL CallMeVCRedistFile
 Var /GLOBAL CallMeDownloadStatus
 Var /GLOBAL CallMePrerequisitesReady

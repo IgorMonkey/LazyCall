@@ -23,6 +23,7 @@ const checks = [
   ['check-assistant-ui.cjs', '--transcript-follow'],
   ['check-assistant-ui.cjs', '--workflow-ui'],
   ['check-assistant-ui.cjs', '--project-context'],
+  ['check-assistant-ui.cjs', '--gallery-extra'],
   ['check-assistant-ui.cjs', '--theme'],
   ['check-assistant-ui.cjs']
 ];
@@ -31,6 +32,7 @@ const screens = [
   ['callme-idle.png', 'Idle', 'Idle meeting screen'],
   ['callme-live.png', 'Live', 'Live recording'],
   ['assistant-main-done-v8.png', 'Done', 'Saved meeting with transcript, assistant reply, and outcomes'],
+  ['assistant-live-target-v8.png', 'Assistant answer', 'Reply target during a live meeting'],
   ['theme-light-main-1264.png', 'Assistant answer', 'Assistant answer in the main window'],
   ['assistant-project-reading.png', 'Assistant streaming', 'Assistant reads connected project context'],
   ['results-noauth-dark-904.png', 'Assistant disconnected', 'Assistant unavailable until Codex sign-in'],
@@ -41,10 +43,20 @@ const screens = [
   ['repository-analysis-timeout.png', 'Materials — error', 'Recoverable project overview timeout'],
   ['assistant-projects-list-v7.png', 'Projects', 'Project list'],
   ['assistant-projects-form-v7.png', 'Projects', 'New project form'],
+  ['gallery-projects-edit.png', 'Projects', 'Edit project form'],
+  ['gallery-meetings-list.png', 'Meetings', 'Saved meetings list'],
+  ['gallery-meetings-empty.png', 'Meetings', 'Empty saved-meetings state'],
   ['callme-transcript.png', 'Transcript', 'Saved transcript'],
   ['assistant-results-v7.png', 'Outcomes', 'Generated decisions, tasks, and questions'],
   ['results-empty-light-1264.png', 'Outcomes', 'Empty outcomes state'],
+  ['gallery-results-empty-manual.png', 'Outcomes', 'Manual outcome entry without a transcript'],
   ['assistant-settings-v8.png', 'Settings', 'Codex and assistant settings'],
+  ['gallery-settings-recording.png', 'Settings', 'Recording settings'],
+  ['gallery-settings-data.png', 'Settings', 'Stored meetings and local integration settings'],
+  ['gallery-settings-appearance.png', 'Settings', 'Appearance and keyboard shortcuts'],
+  ['gallery-settings-updates-unconfigured.png', 'Updates', 'Update channel unavailable'],
+  ['gallery-settings-updates-progress.png', 'Updates', 'Update download progress fixture'],
+  ['gallery-settings-updates-error.png', 'Updates', 'Retryable update error fixture'],
   ['settings-spacing-appearance-1264.png', 'Settings', 'Appearance, compact window, and shortcuts'],
   ['review-en-codex-missing.png', 'Codex runtime', 'English: Codex not found'],
   ['review-en-codex-found.png', 'Codex runtime', 'English: installed Codex found'],
@@ -83,13 +95,28 @@ const publicScreens = new Set([
 const escape = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 async function copy(source, target) { await fs.mkdir(path.dirname(target), { recursive: true }); await fs.copyFile(source, target); }
 
+async function clearGallery(target) {
+  const canonicalRoot = await fs.realpath(root);
+  const expected = path.join(canonicalRoot, path.relative(root, target));
+  if (path.relative(canonicalRoot, expected).startsWith('..') || expected === canonicalRoot) throw new Error('Gallery output must stay in the workspace');
+  let ancestor = target;
+  for (;;) {
+    try {
+      const resolved = await fs.realpath(ancestor);
+      if (resolved.toLowerCase() !== path.join(canonicalRoot, path.relative(root, ancestor)).toLowerCase()) throw new Error('Gallery output cannot follow a redirected path');
+      break;
+    } catch (error) { if (error.code !== 'ENOENT') throw error; ancestor = path.dirname(ancestor); }
+  }
+  await fs.rm(target, { recursive: true, force: true });
+}
+
 (async () => {
   for (const [script, ...args] of checks) {
     console.log(`fixture capture: ${script} ${args.join(' ')}`);
     execFileSync(process.execPath, [path.join(root, 'scripts', script), ...args], { cwd: root, stdio: 'inherit', env: { ...process.env, CALLME_UI_DIST: process.env.CALLME_UI_DIST || path.join(root, 'dist') } });
   }
-  await fs.rm(docsOutput, { recursive: true, force: true });
-  await fs.rm(reviewOutput, { recursive: true, force: true });
+  await clearGallery(docsOutput);
+  await clearGallery(reviewOutput);
   await fs.mkdir(docsOutput, { recursive: true });
   await fs.mkdir(path.join(reviewOutput, 'screens'), { recursive: true });
   const manifest = [];

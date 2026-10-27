@@ -6,15 +6,22 @@ Contributions are welcome: bug fixes, UX improvements, translations, tests, docu
 
 ## Development
 
-Use Windows x64, Node.js 24 LTS, and npm.
+Use Windows x64, Node.js 24 LTS, Corepack, and Yarn 4.13.0.
 
 ```powershell
-npm ci
-npm run build
-npm test
+corepack enable
+yarn --version
+yarn install --immutable
+yarn build
+yarn test
 ```
 
-These checks must not use a ChatGPT account, real meeting data, a microphone, model requests, or cloud services. `npm run setup` downloads native dependencies for development; read [the build guide](docs/BUILD.md) before packaging native binaries.
+These checks must not use a ChatGPT account, real meeting data, a microphone, model requests, or cloud services. `yarn setup` downloads native dependencies for development; read [the build guide](docs/BUILD.md) before packaging native binaries.
+
+For branch, PR, compatibility, and version rules, read the [development workflow](docs/DEVELOPMENT_WORKFLOW.md).
+
+
+Use exact dependency versions in `package.json`, without `^` or `~`. Yarn defaults to exact additions; commit `yarn.lock` with dependency changes. CI rejects version ranges and lockfile changes during installation.
 
 ## Pull requests
 

@@ -13,7 +13,7 @@ body:
     id: version
     attributes:
       label: LazyCall version
-      placeholder: "For example: 0.4.0-preview"
+      placeholder: "For example: 0.3.5-alpha.1"
     validations:
       required: true
   - type: dropdown
@@ -21,7 +21,7 @@ body:
     attributes:
       label: How was LazyCall installed?
       options:
-        - Preview installer
+        - Alpha installer
         - Built from source
         - Other
     validations:
