@@ -24,6 +24,10 @@ const assert = require('node:assert/strict');
     }
     const page = await instance.firstWindow();
     await require("./prepare-ui-fixture.cjs")(page);
+    await page.evaluate(() => {
+      window.__packagedHealth = [];
+      window.callme.onHealth(event => window.__packagedHealth.push(event));
+    });
     const updateStatus = await page.evaluate(() => window.callme.updateStatus());
     if (publicLight && await require('../dist-electron/updates.js').hasReleaseFeed(path.join(runtime.resources, 'app-update.yml'))) {
       assert.notEqual(updateStatus.state, 'unconfigured', 'Configured packaged updater must load successfully');
@@ -170,7 +174,17 @@ const assert = require('node:assert/strict');
       const pcm = Uint8Array.from(bytes);
       window.callme.audio('self', 0, pcm.byteLength / 32, pcm.buffer);
     }, Array.from(pcm));
-    await page.locator('.utterance.self p').filter({ hasText: 'заявки' }).waitFor({ timeout: 45000 });
+    try {
+      await page.locator('.utterance.self p').filter({ hasText: 'заявки' }).waitFor({ timeout: 45000 });
+    } catch (error) {
+      const diagnostics = await page.evaluate(async () => ({
+        status: await window.callme.whisperStatus(),
+        health: window.__packagedHealth,
+        transcript: [...document.querySelectorAll('.utterance p')].map(node => node.textContent)
+      }));
+      console.error('Packaged synthetic speech diagnostics: ' + JSON.stringify(diagnostics));
+      throw error;
+    }
     await page.evaluate(async sessionId => { await window.callme.note('Переносимая сборка: synthetic smoke.', sessionId); await window.callme.stop(); }, startedSession.sessionId);
     const sessions = await readdir(path.join(data, 'sessions'));
     const events = (await readFile(path.join(data, 'sessions', sessions[0], 'events.jsonl'), 'utf8')).trim().split('\n').map(JSON.parse);
