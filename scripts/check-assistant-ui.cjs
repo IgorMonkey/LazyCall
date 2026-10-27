@@ -274,7 +274,7 @@ const assert = require('node:assert/strict');
       await fs.writeFile('test-results/palette-review.json', JSON.stringify(result, null, 2)); console.log(JSON.stringify(result)); return;
     }
     if (process.argv.includes('--onboarding')) {
-      const openGuide = async name => { await page.getByRole('button', { name: name === 'How it works' ? 'More' : 'Ещё', exact: true }).click(); await page.getByRole('menuitem', { name, exact: true }).click(); };
+      const openGuide = async name => { await page.getByRole('button', { name: name === 'How it works' ? 'More' : 'Ещё', exact: true }).click(); await page.getByRole('menuitem', { name, exact: true }).click(); await page.getByTestId('onboarding-dialog').waitFor({ state: 'visible' }); };
       await fs.mkdir('test-results', { recursive: true });
       const shots = [];
       const shot = async name => { await page.locator('.onboarding-slide.is-leaving').waitFor({ state: 'detached' }); const file = `test-results/review-onboarding-${name}.png`; await page.screenshot({ path: file, animations: 'disabled' }); shots.push(file); };
@@ -298,7 +298,8 @@ const assert = require('node:assert/strict');
       assert.equal(await page.evaluate(() => window.uiFixture.requests.length), 0);
       await openGuide('Как пользоваться');
       await page.keyboard.press('Escape');
-      await page.waitForFunction(() => document.activeElement?.classList.contains('header-more-trigger'));
+      await dialog.waitFor({ state: 'hidden' });
+      await page.waitForFunction(() => document.activeElement?.classList.contains('header-more-trigger')); 
       assert.equal(await page.locator('.header-more-trigger').evaluate(node => document.activeElement === node), true);
       await page.getByRole('button', { name: 'Настройки', exact: true }).click();
       await page.getByRole('tab', { name: 'Вид', exact: true }).click();
