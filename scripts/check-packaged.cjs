@@ -1,5 +1,5 @@
 const { _electron: electron } = require('playwright');
-const { mkdtemp, readFile, readdir, mkdir, writeFile, access } = require('node:fs/promises');
+const { mkdtemp, readFile, readdir, mkdir, writeFile, access, realpath } = require('node:fs/promises');
 const { tmpdir } = require('node:os');
 const path = require('node:path');
 const assert = require('node:assert/strict');
@@ -8,14 +8,14 @@ const assert = require('node:assert/strict');
   const executable = path.resolve(process.env.CALLME_PACKAGED_EXE || 'release/win-unpacked/LazyCall.exe');
   const publicLight = process.env.CALLME_PUBLIC_LIGHT === '1';
   await access(executable);
-  const data = await mkdtemp(path.join(tmpdir(), 'callme-packaged-'));
+  const data = await realpath(await mkdtemp(path.join(tmpdir(), 'callme-packaged-')));
   const env = { ...process.env }; delete env.ELECTRON_RUN_AS_NODE;
   const instance = await electron.launch({ executablePath: executable, args: ['--user-data-dir=' + data], env, timeout: 30000 });
   const errors = [];
   try {
     const runtime = await instance.evaluate(({ app }) => ({ version: app.getVersion(), packaged: app.isPackaged, data: app.getPath('userData'), resources: process.resourcesPath, app: app.getAppPath() }));
     // Stop before any test writes if this Electron build ignores isolation flags.
-    assert.equal(path.resolve(runtime.data).toLowerCase(), path.resolve(data).toLowerCase(), 'Packaged test must use isolated userData');
+    assert.equal((await realpath(runtime.data)).toLowerCase(), data.toLowerCase(), 'Packaged test must use isolated userData');
     assert.equal(runtime.packaged, true);
     assert(runtime.resources.toLowerCase().startsWith(path.dirname(executable).toLowerCase()));
     if (publicLight) {
@@ -24,6 +24,10 @@ const assert = require('node:assert/strict');
     }
     const page = await instance.firstWindow();
     await require("./prepare-ui-fixture.cjs")(page);
+    await page.evaluate(() => {
+      window.__packagedHealth = [];
+      window.callme.onHealth(event => window.__packagedHealth.push(event));
+    });
     const updateStatus = await page.evaluate(() => window.callme.updateStatus());
     if (publicLight && await require('../dist-electron/updates.js').hasReleaseFeed(path.join(runtime.resources, 'app-update.yml'))) {
       assert.notEqual(updateStatus.state, 'unconfigured', 'Configured packaged updater must load successfully');
@@ -143,7 +147,7 @@ const assert = require('node:assert/strict');
     });
     assert.equal(imported.files[0].relativePath, 'README.md');
     const knowledge = await page.evaluate(() => window.callme.projectKnowledge());
-    assert.equal(path.resolve(knowledge.folder.path), path.resolve(contextDirectory));
+    assert.equal((await realpath(knowledge.folder.path)).toLowerCase(), (await realpath(contextDirectory)).toLowerCase());
     assert.equal(knowledge.folder.available, true);
     const packedFiles = require('@electron/asar').listPackage(runtime.app).map(file => file.replaceAll('\\', '/'));
     for (const required of ['/assets/lazycall-icon.png', '/assets/lazycall-icon.ico', '/assets/lazycall-logo.png', '/assets/lazycall-wordmark.svg', '/assets/lazycall-lockup.svg', '/assets/lazycall-lockup-light.svg', '/licenses/Scada-OFL.txt']) assert(packedFiles.includes(required), 'Missing packaged asset/license: ' + required);
@@ -170,7 +174,17 @@ const assert = require('node:assert/strict');
       const pcm = Uint8Array.from(bytes);
       window.callme.audio('self', 0, pcm.byteLength / 32, pcm.buffer);
     }, Array.from(pcm));
-    await page.locator('.utterance.self p').filter({ hasText: 'заявки' }).waitFor({ timeout: 45000 });
+    try {
+      await page.locator('.utterance.self p').filter({ hasText: 'заявки' }).waitFor({ timeout: status.backend === 'CPU' ? 135000 : 45000 });
+    } catch (error) {
+      const diagnostics = await page.evaluate(async () => ({
+        status: await window.callme.whisperStatus(),
+        health: window.__packagedHealth,
+        transcript: [...document.querySelectorAll('.utterance p')].map(node => node.textContent)
+      }));
+      console.error('Packaged synthetic speech diagnostics: ' + JSON.stringify(diagnostics));
+      throw error;
+    }
     await page.evaluate(async sessionId => { await window.callme.note('Переносимая сборка: synthetic smoke.', sessionId); await window.callme.stop(); }, startedSession.sessionId);
     const sessions = await readdir(path.join(data, 'sessions'));
     const events = (await readFile(path.join(data, 'sessions', sessions[0], 'events.jsonl'), 'utf8')).trim().split('\n').map(JSON.parse);

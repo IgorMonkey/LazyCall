@@ -1,5 +1,12 @@
 # LazyCall changelog
 
+## Unreleased
+
+- Electron 45 with Node 24 types aligned to its embedded runtime.
+- Updated, commit-pinned GitHub Actions and a working clean-runner release-review build.
+- CPU speech inference can take up to two minutes on slower hardware. CUDA keeps
+  its 30-second limit; the bounded queue and 20-second stop-drain limit are unchanged.
+
 ## 0.3.6 — workspace and dialog alignment
 
 - Shared grid for the transcript and assistant panes: aligned labels, text areas,

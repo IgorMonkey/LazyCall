@@ -147,7 +147,8 @@ export class Whisper {
         const job = this.jobs.shift()!;
         this.activeJob = job; this.queueStatus();
         this.abort = new AbortController();
-        const timeout = setTimeout(() => this.abort?.abort(), 30000);
+        // CPU inference can exceed 30s on slower machines; queue and stop limits stay bounded.
+        const timeout = setTimeout(() => this.abort?.abort(), this.status.backend === "CPU" ? 120000 : 30000);
         try {
           const form = new FormData();
           form.append("file", new Blob([new Uint8Array(wavFromPcm(job.pcm))], { type: "audio/wav" }), "speech.wav");
