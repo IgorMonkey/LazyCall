@@ -175,7 +175,7 @@ const assert = require('node:assert/strict');
       window.callme.audio('self', 0, pcm.byteLength / 32, pcm.buffer);
     }, Array.from(pcm));
     try {
-      await page.locator('.utterance.self p').filter({ hasText: 'заявки' }).waitFor({ timeout: 45000 });
+      await page.locator('.utterance.self p').filter({ hasText: 'заявки' }).waitFor({ timeout: status.backend === 'CPU' ? 135000 : 45000 });
     } catch (error) {
       const diagnostics = await page.evaluate(async () => ({
         status: await window.callme.whisperStatus(),
