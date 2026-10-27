@@ -8,8 +8,8 @@
 [**Download for Windows**](https://github.com/IgorMonkey/LazyCall/releases/latest)
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-main-en-dark.png">
-  <img src="docs/screenshots/readme-main-en-light.png" alt="Synthetic English demo: transcript and an access-check reply draft" width="960">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-main-en-dark.png?v=a431c516c679">
+  <img src="docs/screenshots/readme-main-en-light.png?v=4c7c7bb2ef6d" alt="Synthetic English demo: transcript and an access-check reply draft" width="960">
 </picture>
 
 **You generated the code. Now explain it.**
@@ -93,8 +93,8 @@ This is an early open-source project still being tested on real calls. A suggest
 <summary>Compact window</summary>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-compact-en-dark.png">
-  <img src="docs/screenshots/readme-compact-en-light.png" alt="Synthetic English demo in the LazyCall compact window" width="404">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-compact-en-dark.png?v=efad610ead7a">
+  <img src="docs/screenshots/readme-compact-en-light.png?v=f7eba49cb808" alt="Synthetic English demo in the LazyCall compact window" width="404">
 </picture>
 </details>
 
@@ -102,8 +102,8 @@ This is an early open-source project still being tested on real calls. A suggest
 <summary>Meeting outcomes</summary>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-results-en-dark.png">
-  <img src="docs/screenshots/readme-results-en-light.png" alt="Synthetic English demo: decisions, task, and open question" width="960">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-results-en-dark.png?v=77a4c0409080">
+  <img src="docs/screenshots/readme-results-en-light.png?v=a51a38e66491" alt="Synthetic English demo: decisions, task, and open question" width="960">
 </picture>
 </details>
 

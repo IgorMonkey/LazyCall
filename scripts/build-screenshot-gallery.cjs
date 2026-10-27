@@ -148,7 +148,27 @@ async function clearGallery(target) {
   await fs.rm(target, { recursive: true, force: true });
 }
 
+async function refreshScreenshotReferences() {
+  const pages = ['README.md', 'README.ru.md', 'docs/SCREENSHOTS.md', 'docs/SCREENSHOTS.ru.md'];
+  const pattern = /((?:docs\/)?screenshots\/[a-z0-9-]+\.png)(?:\?v=[a-f0-9]+)?/g;
+  for (const file of pages) {
+    const source = await fs.readFile(path.join(root, file), 'utf8');
+    const versions = new Map();
+    for (const [, reference] of source.matchAll(pattern)) {
+      const data = await fs.readFile(path.resolve(root, path.dirname(file), reference));
+      versions.set(reference, createHash('sha256').update(data).digest('hex').slice(0, 12));
+    }
+    const updated = source.replace(pattern, (_, reference) => `${reference}?v=${versions.get(reference)}`);
+    if (updated !== source) await fs.writeFile(path.join(root, file), updated);
+  }
+}
+
 (async () => {
+  if (process.argv.includes('--refresh-references')) {
+    await refreshScreenshotReferences();
+    console.log('Screenshot URLs now include their content hashes.');
+    return;
+  }
   const activeChecks = showcaseOnly ? showcaseChecks : checks;
   const activeScreens = showcaseOnly ? screens.filter(([file]) => file.startsWith('readme-')) : screens;
   for (const [script, ...args] of activeChecks) {
@@ -181,6 +201,7 @@ async function clearGallery(target) {
     await copy(path.join(results, sourceFile), path.join(docsOutput, alias));
     await copy(path.join(results, sourceFile), path.join(reviewOutput, 'screens', alias));
   }
+  await refreshScreenshotReferences();
   const groups = [...new Set(manifest.map(item => item.group))];
   const html = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>LazyCall ${version} — synthetic UI gallery</title><style>body{margin:0;background:#13161c;color:#f1f3f6;font:16px/1.55 system-ui}main{max-width:1320px;margin:auto;padding:30px 20px}p{color:#b8c0ca;max-width:960px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}figure{margin:0;border:1px solid #39414d;border-radius:10px;overflow:hidden;background:#1d222b}img{width:100%;display:block;background:#fff}figcaption{padding:10px 12px;font-weight:600}small{display:block;color:#aab3bf;font-weight:400}h2{margin-top:42px}</style><main><h1>LazyCall ${version} — synthetic UI gallery</h1><p>Every image is regenerated from a local Playwright fixture. No real meeting, recording, repository, account, provider response, audit, or replay material is included.</p>${groups.map(group => `<section><h2>${escape(group)}</h2><div class="grid">${manifest.filter(item => item.group === group).map(item => `<figure><a href="screens/${encodeURIComponent(item.file)}"><img src="screens/${encodeURIComponent(item.file)}" alt="${escape(item.title)}" loading="lazy"></a><figcaption>${escape(item.title)}<small>${escape(item.file)}</small></figcaption></figure>`).join('')}</div></section>`).join('')}</main>`;
   await fs.writeFile(path.join(reviewOutput, 'index.html'), html, 'utf8');

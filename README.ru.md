@@ -8,8 +8,8 @@
 [**Скачать для Windows**](https://github.com/IgorMonkey/LazyCall/releases/latest)
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-main-ru-dark.png">
-  <img src="docs/screenshots/readme-main-ru-light.png" alt="Синтетический пример: расшифровка и ответ о проверке прав" width="960">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-main-ru-dark.png?v=6f1831540073">
+  <img src="docs/screenshots/readme-main-ru-light.png?v=b0efe5f005b6" alt="Синтетический пример: расшифровка и ответ о проверке прав" width="960">
 </picture>
 
 **Нейрослоп для нейрослопа.**
@@ -95,8 +95,8 @@ yarn test
 <summary>Компактное окно</summary>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-compact-ru-dark.png">
-  <img src="docs/screenshots/readme-compact-ru-light.png" alt="Синтетический пример подсказки в компактном окне LazyCall" width="404">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-compact-ru-dark.png?v=e5f3a2b4d605">
+  <img src="docs/screenshots/readme-compact-ru-light.png?v=095e91a13a62" alt="Синтетический пример подсказки в компактном окне LazyCall" width="404">
 </picture>
 </details>
 
@@ -104,8 +104,8 @@ yarn test
 <summary>Итоги встречи</summary>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-results-ru-dark.png">
-  <img src="docs/screenshots/readme-results-ru-light.png" alt="Синтетический пример итогов: решение, задача и открытый вопрос" width="960">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-results-ru-dark.png?v=c4eadb21d77e">
+  <img src="docs/screenshots/readme-results-ru-light.png?v=f91ec80b8210" alt="Синтетический пример итогов: решение, задача и открытый вопрос" width="960">
 </picture>
 </details>
 
