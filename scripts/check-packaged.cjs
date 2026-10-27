@@ -104,7 +104,17 @@ const assert = require('node:assert/strict');
     assert.equal(compactState.fullBridge, 'undefined', 'Compact must not expose the main desktop API');
     assert.equal(compactState.snapshot.theme, 'light');
     assert.equal(compactState.snapshot.phase, 'idle');
-    assert(await instance.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().some(window => window.webContents.getURL().endsWith('#compact') && window.isAlwaysOnTop() && window.getMinimumSize()[1] === 380)));
+    let compactWindow;
+    const compactDeadline = Date.now() + 10000;
+    do {
+      compactWindow = await instance.evaluate(({ BrowserWindow }) => {
+        const window = BrowserWindow.getAllWindows().find(window => window.webContents.getURL().endsWith('#compact'));
+        return window ? { alwaysOnTop: window.isAlwaysOnTop(), minimumSize: window.getMinimumSize(), bounds: window.getBounds() } : null;
+      });
+      if (compactWindow?.alwaysOnTop && compactWindow.minimumSize[1] === 380) break;
+      await new Promise(resolve => setTimeout(resolve, 100));
+    } while (Date.now() < compactDeadline);
+    assert(compactWindow?.alwaysOnTop && compactWindow.minimumSize[1] === 380, JSON.stringify(compactWindow));
     await compact.evaluate(() => window.callmeCompact.hide());
     const repositoryFolder = path.join(data, 'repository-without-project');
     await mkdir(repositoryFolder);
