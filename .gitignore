@@ -1,0 +1,13 @@
+node_modules/
+dist/
+dist-electron/
+release/
+runtime/
+test-results/
+*.log
+.env
+.env.*
+/build/x86-unicode/
+/build/callme-web-installer-vc.nsh
+/design/logo-concepts/
+/design/review/

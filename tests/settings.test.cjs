@@ -1,0 +1,33 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const { mkdtemp, readFile, writeFile } = require('node:fs/promises');
+const { tmpdir } = require('node:os');
+const path = require('node:path');
+const { loadSettings, storeSettings, validateSettings } = require('../dist-electron/settings');
+const defaults = { language: 'ru', locale: 'system', compute: 'auto', autoHints: false, autoSummary: true, screenContext: true, enterToSend: true, model: '', reasoningEffort: 'default', theme: 'system' };
+
+test('preferences persist across loads and reject unsupported values without overwriting saved settings', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'callme-settings-'));
+  assert.deepEqual(await loadSettings(directory), defaults);
+  const saved = { language: 'en', locale: 'en', compute: 'cpu', autoHints: true, autoSummary: false, screenContext: false, enterToSend: true, model: 'fixture-model/v1', reasoningEffort: 'high', theme: 'dark' };
+  await storeSettings(directory, saved);
+  assert.deepEqual(await loadSettings(directory), saved);
+  await assert.rejects(storeSettings(directory, { language: 'xx', compute: 'shell' }));
+  assert.deepEqual(JSON.parse(await readFile(path.join(directory, 'settings.json'), 'utf8')), saved);
+  await assert.rejects(storeSettings(directory, { language: 'ru', compute: 'auto', autoHints: 'yes' }));
+  await assert.rejects(storeSettings(directory, { ...defaults, screenContext: 1 }));
+  await assert.rejects(storeSettings(directory, { ...defaults, model: 'has spaces' }));
+  await assert.rejects(storeSettings(directory, { ...defaults, model: 'a'.repeat(101) }));
+  await assert.rejects(storeSettings(directory, { ...defaults, reasoningEffort: 'high' }));
+  await assert.rejects(storeSettings(directory, { ...defaults, model: 'fixture-model', reasoningEffort: 'unsupported' }));
+  await assert.rejects(storeSettings(directory, { ...defaults, theme: 'sepia' }));
+  await assert.rejects(storeSettings(directory, { ...defaults, locale: 'fr' }));
+  assert.deepEqual(JSON.parse(await readFile(path.join(directory, 'settings.json'), 'utf8')), saved, 'Invalid preferences must not replace the durable valid file');
+  await writeFile(path.join(directory, 'settings.json'), JSON.stringify({ language: 'ru', compute: 'auto', enterToSend: false }));
+  assert.deepEqual(await loadSettings(directory), { ...defaults, enterToSend: false }, 'An explicit legacy opt-out must be preserved');
+  await writeFile(path.join(directory, 'settings.json'), JSON.stringify({ language: 'ru', compute: 'auto' }));
+  assert.deepEqual(await loadSettings(directory), defaults, 'Legacy preferences gain durable defaults for newly introduced fields');
+  assert.throws(() => validateSettings(null));
+  await writeFile(path.join(directory, 'settings.json'), '{ broken');
+  await assert.rejects(loadSettings(directory));
+});

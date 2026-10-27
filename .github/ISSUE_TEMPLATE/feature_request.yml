@@ -1,0 +1,39 @@
+name: Feature request
+description: Propose an improvement to LazyCall.
+title: "[Feature]: "
+labels: [feature]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please describe the problem before proposing an implementation. Do not include real meeting content, screenshots with private data, credentials, or private-source excerpts.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      placeholder: "During a call, I need to..."
+    validations:
+      required: true
+  - type: textarea
+    id: behaviour
+    attributes:
+      label: Desired behaviour
+      placeholder: "When ..., LazyCall should ..."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or current workaround
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Use synthetic examples only.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: My request contains no recordings, credentials, private-source excerpts, or personal data.
+          required: true

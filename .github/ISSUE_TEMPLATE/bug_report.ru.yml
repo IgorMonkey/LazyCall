@@ -1,0 +1,71 @@
+name: Сообщить об ошибке
+description: Расскажите, что не сработало в LazyCall.
+title: "[Баг]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо за сообщение.
+
+        **Приватность:** не прикладывайте реальные записи встреч, фрагменты расшифровок, скриншоты с приватным содержимым, токены, API-ключи или исходный код закрытого проекта. Используйте минимальный синтетический пример.
+  - type: input
+    id: version
+    attributes:
+      label: Версия LazyCall
+      placeholder: "Например: 0.4.0-preview"
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: Как установлен LazyCall?
+      options:
+        - Preview-установщик
+        - Сборка из исходников
+        - Другое
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Windows и оборудование
+      description: Укажите версию Windows, режим CPU/GPU и нужные устройства. Не указывайте имя пользователя или пути.
+      placeholder: "Windows 11 24H2; NVIDIA CUDA; USB-микрофон"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Шаги воспроизведения
+      description: Используйте минимальную последовательность без чувствительных данных.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Ожидаемое поведение
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Фактическое поведение
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Безопасная диагностика
+      description: Вставляйте только отредактированные ошибки или скриншоты на синтетических данных.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Проверка приватности
+      options:
+        - label: Я удалил(а) содержание встречи, учётные данные, приватный исходный код и персональные данные.
+          required: true

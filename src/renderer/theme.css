@@ -1,0 +1,72 @@
+/* Graphite surfaces, coral actions, and separate semantic status colours. */
+:root, :root[data-theme="light"] {
+  color-scheme: light;
+  --ink: #1e2430; --secondary: #535d6b; --muted: #657081;
+  --chrome: #f1f3f6; --surface: #ffffff; --surface-raised: #f8f9fc; --surface-muted: #e8edf3;
+  --line: #dce2ea; --control-border: #7e8b9e; --control-border-hover: #556477;
+  --accent: #c44438; --accent-hover: #aa372e; --accent-ink: #ffffff; --accent-soft: #fff0ed;
+  --disabled: #e5e9ef; --disabled-ink: #697587;
+  --focus: #535d6b33; --focus-border: #535d6b; --shadow: #15203324;
+  --error: #b52b45; --error-soft: #fff0f3; --error-border: #ca536a;
+  --warning: #865307; --meter: #c4cdd9; --scroll-thumb: #a6b1c0;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #f0f3f8; --secondary: #b7c1d0; --muted: #a1afc2;
+  --chrome: #12151b; --surface: #1b2029; --surface-raised: #252c37; --surface-muted: #303a49;
+  --line: #394454; --control-border: #718198; --control-border-hover: #a6b6cc;
+  --accent: #ff897a; --accent-hover: #ffa295; --accent-ink: #251b20; --accent-soft: #3b282c;
+  --disabled: #303744; --disabled-ink: #9aa8bc;
+  --focus: #b7c1d033; --focus-border: #b7c1d0; --shadow: #00000066;
+  --error: #ff9fb0; --error-soft: #3d2430; --error-border: #b46a80;
+  --warning: #f0c078; --meter: #4e5d72; --scroll-thumb: #61728a;
+}
+html, body, .app { color: var(--ink); background: var(--chrome); }
+.workspace, .settings-dialog, .materials-dialog, .meetings-dialog, .projects-dialog, .results-dialog, .transcript-edit-dialog, .result-item, .project-item, .assistant-composer, .post-recording {
+  background: var(--surface); color: var(--ink); border-color: var(--line);
+}
+.settings-dialog, .materials-dialog, .meetings-dialog, .projects-dialog, .results-dialog, .transcript-edit-dialog { box-shadow: 0 20px 80px var(--shadow); }
+.context, .assistant-pane { background: var(--surface); }
+.conversation-footer { border-color: var(--line); }
+.button-primary { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+.button-primary:hover:not(:disabled) { color: var(--accent-ink); background: var(--accent-hover); border-color: var(--accent-hover); }
+.button-secondary, .ui-select, .ui-input, .ui-textarea, .ui-select-popover {
+  color: var(--ink); background: var(--surface-raised); border-color: var(--control-border); box-shadow: none;
+}
+.button-secondary:hover:not(:disabled), .ui-select:hover:not(:disabled) { background: var(--surface-muted); border-color: var(--control-border-hover); }
+.button-quiet:hover:not(:disabled):not(:focus-visible), .icon-button:hover:not(:disabled), .project-item:hover:not(:disabled), .project-item:focus-visible { background: var(--surface-muted); color: var(--ink); }
+.icon-button:hover:not(:disabled) { border-color: var(--control-border); }
+.button-primary:disabled, .button-secondary:disabled, .ui-select:disabled, .ui-input:disabled, .ui-textarea:disabled { color: var(--disabled-ink); background: var(--disabled); border-color: var(--disabled); box-shadow: none; }
+.icon-button:disabled { color: var(--disabled-ink); }
+.settings-tabs .is-active { background: var(--surface-muted); color: var(--ink); box-shadow: none; }
+.settings-card, .settings-dialog .settings-runtime { background: var(--surface-raised); border-color: var(--line); }
+.ui-select-option:hover:not(:disabled), .ui-select-option.is-active { background: var(--surface-muted); }
+.remote .speaker, .assistant-message-text a, .button-text, .ui-select-option[aria-selected="true"], .timer.is-live { color: var(--accent); }
+.utterance p, .notes-section textarea, .message-user .assistant-message-text { color: var(--ink); }
+.meter-label, .timer, .secondary-label, .screen-caption, .conversation-footer, .app-footer, .meeting-phase { color: var(--secondary); }
+.meter-bars i { background: var(--meter); }
+.meter-bars i.lit, .is-live .status-dot { background: var(--accent); }
+.is-live .status-dot { box-shadow: 0 0 0 3px var(--accent-soft); }
+.ui-checkbox input, .meetings-filter input { accent-color: var(--accent); }
+.ui-textarea::placeholder, .ui-input::placeholder { color: var(--muted); opacity: 1; }
+.preview, .preview.is-empty { background: var(--surface-raised); border-color: var(--control-border); }
+.assistant-message-text code, .folder-preview, .result-evidence { background: var(--surface-muted); border-color: var(--line); }
+.alert { color: var(--error); background: var(--error-soft); border-color: var(--error-border); }
+.alert.info { color: var(--ink); background: var(--surface-raised); border-color: var(--line); }
+.button-stop { color: var(--error); background: var(--error-soft); border-color: var(--error-border); }
+.button-stop:hover:not(:disabled) { background: var(--error-soft); border-color: var(--error); }
+.settings-error, .settings-dialog .settings-error, .assistant-failure, .note-state.error, .engine-status.error, .engine-status.missing { color: var(--error); }
+.settings-dialog .settings-notice, .settings-notice { color: var(--warning); }
+.engine-status.loading .status-dot { background: var(--warning); }
+.engine-status.error .status-dot, .engine-status.missing .status-dot { background: var(--error); }
+.compact-state-error { color: var(--error); background: var(--error-soft); border-color: var(--error-border); }
+button:focus-visible, textarea:focus-visible, .ui-input:focus-visible, .ui-checkbox input:focus-visible, .assistant-message-text a:focus-visible {
+  border-color: var(--control-border-hover); outline: 2px solid var(--focus-border); outline-offset: 2px; box-shadow: none;
+}
+.button-quiet:focus-visible, .button-text:focus-visible, .icon-button:focus-visible { border-color: transparent; }
+.onboarding-skip:focus-visible { outline-color: var(--focus-border); }
+.utterance:focus { background: var(--surface-muted); outline: 2px solid var(--secondary); outline-offset: 2px; box-shadow: none; }
+::-webkit-scrollbar-thumb { background: var(--scroll-thumb); }
+::-webkit-scrollbar-thumb:hover { background: var(--secondary); }
+dialog::backdrop { background: #17202d55; }
+:root[data-theme="dark"] dialog::backdrop { background: #070b1299; }

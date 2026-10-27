@@ -1,0 +1,19 @@
+name: Question / Вопрос
+description: Ask about using or contributing to LazyCall.
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: Please use English or Russian. Do not attach private recordings, transcripts, source code, credentials, or personal data.
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question / Ваш вопрос
+      description: Explain what you are trying to do and what is unclear.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: LazyCall version / Версия
+      placeholder: e.g. 0.3.5-alpha.1 or a commit SHA

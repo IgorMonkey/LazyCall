@@ -1,0 +1,31 @@
+.onboarding-dialog { width: 560px; max-width: calc(100vw - 40px); max-height: calc(100dvh - 48px); margin: auto; padding: 0; color: var(--ink); background: var(--surface); border: 1px solid var(--control-border); border-radius: 14px; overflow: hidden; box-shadow: 0 24px 88px var(--shadow); }
+.onboarding-dialog::backdrop { background: #15151578; backdrop-filter: blur(2px); }
+.onboarding-shell { display: flex; flex-direction: column; min-height: 340px; max-height: calc(100dvh - 48px); padding: 24px 28px 20px; }
+.onboarding-topline { display: flex; align-items: center; justify-content: space-between; min-height: 28px; color: var(--secondary); font-size: 13px; line-height: 20px; }
+.onboarding-skip { border: 0; padding: 4px; color: var(--secondary); background: transparent; font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.onboarding-skip:hover { color: var(--ink); }
+.onboarding-skip:focus-visible { outline: 2px solid var(--focus-border); outline-offset: 3px; border-radius: 3px; }
+.onboarding-progress { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; height: 3px; margin: 16px 0 22px; }
+.onboarding-progress i { border-radius: 99px; background: var(--line); transition: background-color 200ms ease, transform 200ms ease; }
+.onboarding-progress i.is-complete, .onboarding-progress i.is-active { background: var(--accent); }
+.onboarding-progress i.is-active { transform: scaleY(1.35); }
+.onboarding-stage { position: relative; flex: 1 1 auto; min-height: 200px; overflow: hidden; }
+.onboarding-slide { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; gap: 28px; min-height: 200px; }
+.onboarding-slide.is-leaving { position: absolute; inset: 0; pointer-events: none; }
+.onboarding-slide.is-entering.is-forward { animation: onboarding-enter-forward 200ms ease-out both; }
+.onboarding-slide.is-entering.is-backward { animation: onboarding-enter-backward 200ms ease-out both; }
+.onboarding-slide.is-leaving.is-forward { animation: onboarding-leave-forward 200ms ease-in both; }
+.onboarding-slide.is-leaving.is-backward { animation: onboarding-leave-backward 200ms ease-in both; }
+.onboarding-copy { min-width: 0; }
+.onboarding-eyebrow { margin: 0 0 8px; color: var(--accent); font-size: 13px; line-height: 20px; font-weight: var(--weight-medium); }
+.onboarding-copy h2 { margin: 0 0 12px; font-size: 23px; line-height: 29px; letter-spacing: -.25px; }
+.onboarding-copy > p:not(.onboarding-eyebrow) { margin: 0; color: var(--secondary); font-size: 15px; line-height: 23px; }
+.onboarding-copy .onboarding-aside { margin-top: 16px; color: var(--ink); font-size: 13px; line-height: 20px; }
+.onboarding-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; margin-top: 18px; }
+.onboarding-actions-main { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+@keyframes onboarding-enter-forward { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes onboarding-leave-forward { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-18px); } }
+@keyframes onboarding-enter-backward { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes onboarding-leave-backward { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(18px); } }
+@media (max-width: 560px), (max-height: 600px) { .onboarding-shell { min-height: 0; padding: 20px; } .onboarding-stage { min-height: 0; } .onboarding-slide { grid-template-columns: 1fr; gap: 18px; min-height: 0; } .onboarding-copy h2 { font-size: 20px; line-height: 26px; } .onboarding-actions { margin-top: 16px; } }
+@media (prefers-reduced-motion: reduce) { .onboarding-progress i, .onboarding-slide { animation: none !important; transition: none !important; } .onboarding-slide.is-leaving { visibility: hidden; } }

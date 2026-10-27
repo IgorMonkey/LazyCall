@@ -1,0 +1,126 @@
+{
+  "name": "lazycall",
+  "version": "0.3.5-alpha.1",
+  "private": true,
+  "description": "Experimental assistant for technical calls",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.main.json && tsc -p tsconfig.json && vite build",
+    "start": "npm run build && electron .",
+    "setup:whisper": "node scripts/setup-whisper.mjs && node scripts/setup-vc-runtime.mjs",
+    "setup:vc-runtime": "node scripts/setup-vc-runtime.mjs",
+    "setup:codex": "node scripts/setup-codex.mjs",
+    "setup": "npm run setup:whisper && npm run setup:codex",
+    "test": "node --test tests/*.test.cjs",
+    "test:desktop": "npm run build && node scripts/smoke-desktop.cjs",
+    "test:settings": "npm run build && node scripts/check-settings.cjs",
+    "test:ui": "npm run build && node scripts/check-ui.cjs",
+    "test:runtime": "npm run build && node scripts/check-runtime.cjs",
+    "test:assistant-ui": "npm run build && node scripts/check-assistant-ui.cjs",
+    "test:assistant-desktop": "npm run build && node scripts/check-assistant-desktop.cjs",
+    "test:projects": "npm run build && node scripts/check-projects-results.cjs",
+    "test:interactions": "npm run build && node scripts/check-interactions.cjs",
+    "test:follow": "npm run build && node scripts/check-assistant-ui.cjs --transcript-follow",
+    "test:packaged": "node scripts/check-packaged.cjs",
+    "pack": "npm run build && electron-builder --win dir",
+    "dist:win": "npm run build && node scripts/build-installer.cjs",
+    "pack:public": "npm run build && node scripts/build-public-stage.cjs",
+    "dist:web": "node scripts/build-web-installer.cjs",
+    "test:installer": "node scripts/check-installer.cjs"
+  },
+  "dependencies": {
+    "@fontsource/scada": "5.3.0",
+    "electron-updater": "6.8.12",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "electron": "44.9.1",
+    "electron-builder": "^26.0.12",
+    "playwright": "1.64.1",
+    "typescript": "6.0.3",
+    "vite": "8.3.5"
+  },
+  "build": {
+    "appId": "local.callme.app",
+    "productName": "LazyCall",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "licenses/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "runtime/codex",
+        "to": "codex",
+        "filter": [
+          "manifest.json",
+          "LICENSE-Codex.txt",
+          "NOTICE-Codex.txt",
+          "package/vendor/**/*"
+        ]
+      },
+      {
+        "from": "runtime/whisper",
+        "to": "whisper",
+        "filter": [
+          "manifest.json",
+          "LICENSE-*.txt",
+          "ggml-large-v3-turbo-q5_0.bin",
+          "cpu/Release/whisper-server.exe",
+          "cpu/Release/*.dll",
+          "cuda/Release/whisper-server.exe",
+          "cuda/Release/*.dll"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        "dir",
+        "nsis"
+      ],
+      "icon": "assets/lazycall-icon.ico",
+      "signAndEditExecutable": true
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": true,
+      "runAfterFinish": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "LazyCall",
+      "deleteAppDataOnUninstall": false,
+      "displayLanguageSelector": true,
+      "installerLanguages": [
+        "en_US",
+        "ru_RU"
+      ],
+      "language": "1033",
+      "multiLanguageInstaller": true,
+      "differentialPackage": false,
+      "installerIcon": "assets/lazycall-icon.ico",
+      "uninstallerIcon": "assets/lazycall-icon.ico"
+    }
+  },
+  "author": "IgorMonkey and contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IgorMonkey/LazyCall.git"
+  },
+  "homepage": "https://github.com/IgorMonkey/LazyCall#readme",
+  "bugs": {
+    "url": "https://github.com/IgorMonkey/LazyCall/issues"
+  }
+}

@@ -1,0 +1,106 @@
+const { _electron: electron } = require("playwright");
+const { mkdtemp, mkdir, readFile, writeFile } = require("node:fs/promises");
+const { tmpdir } = require("node:os");
+const path = require("node:path");
+const assert = require("node:assert/strict");
+
+const until = async (check, message) => {
+  const deadline = Date.now() + 8000;
+  while (Date.now() < deadline) { if (await check()) return; await new Promise(resolve => setTimeout(resolve, 40)); }
+  throw new Error(message);
+};
+
+(async () => {
+  const data = await mkdtemp(path.join(tmpdir(), "callme-assistant-desktop-project-context-"));
+  const folder = await mkdtemp(path.join(tmpdir(), "callme-project-source-"));
+  const manual = path.join(data, "manual.md");
+  await mkdir(path.join(folder, "docs"), { recursive: true }); await mkdir(path.join(folder, "src"), { recursive: true });
+  await writeFile(path.join(folder, "README.md"), "Selected folder material A.");
+  await writeFile(path.join(folder, "docs", "plan.md"), "Selected folder material B.");
+  await writeFile(path.join(folder, "src", "billing.ts"), "export const paymentTopic = 'billing';");
+  await writeFile(manual, "Manual material survives folder refresh.");
+  const protocol = path.join(data, "fixture-protocol.jsonl");
+  await mkdir("test-results", { recursive: true });
+  const env = { ...process.env, CALLME_TEST_DATA: data, CALLME_FIXTURE_LOG: protocol, CALLME_SKIP_WHISPER: "1" };
+  delete env.ELECTRON_RUN_AS_NODE;
+  let instance;
+  try {
+    instance = await electron.launch({ executablePath: require("electron"), args: [path.resolve("scripts/fixtures/assistant-main.cjs")], env, timeout: 30000 });
+    const page = await instance.firstWindow();
+    await page.getByRole("heading", { name: "LazyCall", exact: true }).waitFor();
+    await instance.evaluate(({ dialog, shell }) => {
+      global.__dialogMode = "folder";
+      global.__opened = [];
+      dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [global.__dialogMode === "folder" ? global.__fixtureFolder : global.__fixtureManual] });
+      shell.openExternal = async url => { global.__opened.push(url); return true; };
+    });
+    // Main-process globals are set directly because the dialog stub executes there.
+    await instance.evaluate((_, values) => { global.__fixtureFolder = values.folder; global.__fixtureManual = values.manual; }, { folder, manual });
+    const project = await page.evaluate(() => window.callme.createProject({ name: "Fixture project", description: "Fixture description" }));
+    await page.evaluate(id => window.callme.selectProject(id), project.id);
+    const preview = await page.evaluate(() => window.callme.previewContextFolder());
+    assert(preview && preview.files.length === 3, "Folder preview must enumerate selected files");
+    assert(preview.files.some(file => file.recommended && file.reason), "Initial preview must explain a recommendation");
+    assert(!JSON.stringify(preview).includes(folder), "Preview must never expose an absolute source path");
+    assert(!JSON.stringify(preview).includes("suggestionText") && !JSON.stringify(preview).includes("fingerprint"), "Preview must not expose ranking internals");
+    await assert.rejects(page.evaluate(value => window.callme.suggestContextFiles(`${value}-stale`, "billing"), preview.id), /устарел/i);
+    await assert.rejects(page.evaluate(value => window.callme.suggestContextFiles(value, "x".repeat(1001)), preview.id), /1000/);
+    const suggested = await page.evaluate(value => window.callme.suggestContextFiles(value, "billing payment"), preview.id);
+    assert.equal(suggested.id, preview.id, "Suggestion must reuse the preview token");
+    const billing = suggested.files.find(file => file.name === "src/billing.ts");
+    assert(billing?.recommended && /billing|payment/i.test(billing.reason || ""), "Topic suggestion must recommend the related file with a reason");
+    assert(!JSON.stringify(suggested).includes(folder), "Suggested preview must never expose an absolute source path");
+    let context = await page.evaluate(value => window.callme.importContextFolder(value.id, value.files.map(file => file.id)), suggested);
+    assert.deepEqual(context.files.map(file => file.relativePath).sort(), ["README.md", "docs/plan.md", "src/billing.ts"]);
+    await instance.evaluate(() => { global.__dialogMode = "file"; });
+    context = await page.evaluate(() => window.callme.addContextFiles());
+    assert(context.files.some(file => file.name === "manual.md" && !file.relativePath));
+    let refreshed = await page.evaluate(() => window.callme.refreshContextFolder());
+    assert.equal(refreshed.selectedIds.length, 3, "Folder refresh must preserve selected files");
+    assert(refreshed.files.every(file => file.changed === false), "Unchanged folder files must be marked unchanged");
+    assert.deepEqual([...refreshed.selectedIds].sort(), refreshed.files.map(file => file.id).sort(), "Refresh must retain the selected preview IDs");
+    context = await page.evaluate(value => window.callme.importContextFolder(value.id, value.selectedIds), refreshed);
+    assert.equal(context.files.length, 4, "Folder reimport must retain manual material and avoid duplicates");
+    await page.evaluate(() => window.callme.agentConnect());
+    const knowledge = await page.evaluate(() => window.callme.analyzeProject());
+    assert(knowledge.brief.text.includes("FIXTURE_PROJECT_BRIEF"));
+    const sent = (await readFile(protocol, "utf8")).trim().split("\n").map(JSON.parse);
+    const analysis = sent.filter(row => row.method === "turn/start").at(-1).params.input.find(item => item.type === "text").text;
+    assert(!analysis.includes(folder), "Analysis must never send the original folder path");
+    assert(!analysis.includes("FIXTURE_GOAL_NOT_FOR_ANALYSIS"));
+    await page.evaluate(() => window.callme.setGoal("FIXTURE_GOAL_NOT_FOR_ANALYSIS"));
+    assert.equal((await page.evaluate(() => window.callme.projectKnowledge())).brief.stale, false, "Changing only the meeting goal must not stale the project brief");
+    await writeFile(path.join(folder, "README.md"), "Selected folder material A changed.");
+    refreshed = await page.evaluate(() => window.callme.refreshContextFolder());
+    assert.equal(refreshed.files.find(file => file.name === "README.md").changed, true, "Changed source must be marked in the refresh preview");
+    assert.deepEqual([...refreshed.selectedIds].sort(), refreshed.files.map(file => file.id).sort(), "Changed refresh must retain the selected preview IDs");
+    context = await page.evaluate(value => window.callme.importContextFolder(value.id, value.selectedIds), refreshed);
+    assert.equal(context.files.length, 4);
+    assert.equal((await page.evaluate(() => window.callme.projectKnowledge())).brief.stale, true, "Changed folder material must stale the brief");
+    const edited = await page.evaluate(() => window.callme.saveProjectBrief("FIXTURE_EDITED_BRIEF"));
+    assert.equal(edited.brief.text, "FIXTURE_EDITED_BRIEF");
+    await page.evaluate(() => window.callme.agentAsk({ text: "FIXTURE_FUTURE_QUESTION", mode: "answer", webSearch: false }));
+    await until(async () => (await page.evaluate(() => window.callme.agentMessages())).at(-1)?.state === "done", "future assistant answer");
+    const future = (await readFile(protocol, "utf8")).trim().split("\n").map(JSON.parse).filter(row => row.method === "turn/start").at(-1).params.input.find(item => item.type === "text").text;
+    assert(future.includes("FIXTURE_EDITED_BRIEF"), "Future assistant context must contain the saved brief");
+    await page.evaluate(() => window.callme.copyMeetingForCodex());
+    const copied = await instance.evaluate(({ clipboard }) => clipboard.readText());
+    assert(copied.includes("Материалы записи LazyCall"));
+    const integration = await page.evaluate(() => window.callme.connectCodexIntegration());
+    assert.deepEqual(integration, { enabled: true, prepared: true });
+    const opened = await instance.evaluate(() => global.__opened);
+    assert(opened.at(-1).startsWith("codex://plugins/callme?"));
+    assert.deepEqual(await page.evaluate(() => window.callme.disconnectCodexIntegration()), { enabled: false, prepared: true });
+    const other = await page.evaluate(() => window.callme.createProject({ name: "Other", description: "FIXTURE_CANCEL_ANALYSIS" }));
+    await page.evaluate(id => window.callme.selectProject(id), other.id);
+    await instance.evaluate(() => { global.__dialogMode = "folder"; });
+    const otherPreview = await page.evaluate(() => window.callme.previewContextFolder());
+    await page.evaluate(value => window.callme.importContextFolder(value.id, value.files.map(file => file.id)), otherPreview);
+    const cancelled = await page.evaluate(async () => { const task = window.callme.analyzeProject(); await new Promise(resolve => setTimeout(resolve, 80)); await window.callme.cancelProjectAnalysis(); try { await task; return false; } catch { return true; } });
+    assert(cancelled, "Cancelled analysis must reject");
+    assert.equal((await page.evaluate(() => window.callme.projectKnowledge())).brief, null, "Cancelled analysis must not overwrite a brief");
+    await page.evaluate(id => window.callme.selectProject(id), project.id);
+    assert.equal((await page.evaluate(() => window.callme.projectKnowledge())).brief.text, "FIXTURE_EDITED_BRIEF", "Projects must keep independent brief state");
+    console.log(JSON.stringify({ status: "passed", checks: ["folder preview suggestions and private metadata", "refresh retention, changed state and stale brief", "analysis prompt and persisted edit", "future assistant brief context", "cancel and project isolation", "copy guard and local Codex integration permission"], fixture: "temporary local files, fixture provider, native dialog/shell stubs; no external launch" }));
+  } finally { if (instance) await instance.close(); }
+})().catch(error => { console.error(error); process.exitCode = 1; });

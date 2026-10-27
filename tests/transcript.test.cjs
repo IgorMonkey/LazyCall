@@ -1,0 +1,71 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const { mkdtemp, readFile } = require('node:fs/promises');
+const { tmpdir } = require('node:os');
+const path = require('node:path');
+const { randomUUID } = require('node:crypto');
+const { correctTranscript, invalidateTranscriptResults } = require('../dist-electron/transcript');
+const { validateResults, mergeGeneratedResults, formatResultsMarkdown } = require('../dist-electron/results');
+const { Journal } = require('../dist-electron/journal');
+const { MeetingStore } = require('../dist-electron/meeting-store');
+const date = '2026-10-26T09:00:00.000Z';
+const original = { id: randomUUID(), source: 'remote', startMs: 1000, endMs: 2000, text: 'Поиск по имени.' };
+const item = (lineId, patch = {}) => ({ id: randomUUID(), type: 'task', text: 'Проверить поиск', evidenceIds: [lineId], status: 'draft', author: 'assistant', assignee: '', dueDate: '', ...patch });
+
+test('corrections preserve first recognition and optimistic version, reject invalid edits', () => {
+  const first = correctTranscript(original, 'Поиск по номеру.', original.text, date);
+  const second = correctTranscript(first, '  Поиск по номеру заявки.  ', first.text, date);
+  assert.equal(second.originalText, original.text);
+  assert.equal(second.text, 'Поиск по номеру заявки.');
+  assert.equal(second.id, original.id);
+  assert.equal(second.startMs, original.startMs);
+  assert.throws(() => correctTranscript(second, 'Changed', original.text, date), /уже изменилась/);
+  for (const value of ['', '  ', 'x'.repeat(20001), 3]) assert.throws(() => correctTranscript(original, value, original.text, date));
+  assert.equal(correctTranscript(first, first.text, first.text, date), first);
+  assert.equal(original.originalText, undefined);
+});
+
+test('only affected evidence becomes stale; regenerated drafts replace old drafts and preserve user decisions', () => {
+  const confirmed = item(original.id, { status: 'confirmed' });
+  const manual = item(original.id, { author: 'user' });
+  const unrelated = item(randomUUID());
+  const draft = item(original.id);
+  const current = { sessionId: randomUUID(), revision: 1, items: [draft, confirmed, manual, unrelated] };
+  const invalidated = invalidateTranscriptResults(current, original.id);
+  assert.equal(invalidated.revision, 2); assert.equal(invalidated.transcriptStale, true);
+  assert.deepEqual(invalidated.items.map(value => !!value.evidenceStale), [true, true, true, false]);
+  assert(formatResultsMarkdown(invalidated, [original]).includes('требуется повторная проверка'));
+  const fresh = item(original.id, { text: 'Проверить номер заявки' });
+  const merged = mergeGeneratedResults(invalidated, [fresh]);
+  assert.equal(merged.transcriptStale, false);
+  assert(!merged.items.some(value => value.id === draft.id));
+  assert(merged.items.some(value => value.id === confirmed.id && value.evidenceStale));
+  assert(merged.items.some(value => value.id === manual.id));
+  assert(merged.items.some(value => value.id === fresh.id));
+  assert.equal(validateResults(merged, current.sessionId, [original, { ...original, id: unrelated.evidenceIds[0] }]).items.length, 4);
+});
+
+test('journal correction replay retains originals, evidence links and stale state across reopening', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'callme-transcript-'));
+  const journal = new Journal(); const id = await journal.start(root);
+  await journal.append('session.started', { id, startedAt: date });
+  await journal.append('transcript.final', original);
+  const results = { sessionId: id, revision: 1, items: [item(original.id, { status: 'confirmed' })] };
+  await journal.append('results.edited', results);
+  await journal.append('session.stopped', { endedAt: date });
+  await journal.append('transcript.edited', { lineId: original.id, previousText: original.text, text: 'Поиск по номеру.', editedAt: date });
+  await journal.append('transcript.edited', { lineId: original.id, previousText: 'Поиск по номеру.', text: 'Поиск по номеру заявки.', editedAt: date });
+  await journal.close();
+  const loaded = await new MeetingStore(root).load(id);
+  assert.equal(loaded.lines[0].originalText, original.text);
+  assert.equal(loaded.lines[0].text, 'Поиск по номеру заявки.');
+  assert.equal(loaded.results.revision, 3);
+  assert.equal(loaded.results.items[0].evidenceStale, true);
+  assert.equal(loaded.results.transcriptStale, true);
+  const rows = (await readFile(path.join(root, id, 'events.jsonl'), 'utf8')).trim().split('\n').map(JSON.parse);
+  assert.equal(rows.find(row => row.type === 'transcript.final').payload.text, original.text);
+  await journal.open(root, id);
+  await journal.append('transcript.edited', { lineId: original.id, previousText: 'obsolete', text: 'Changed', editedAt: date });
+  await journal.close();
+  await assert.rejects(() => new MeetingStore(root).load(id), /уже изменилась/);
+});

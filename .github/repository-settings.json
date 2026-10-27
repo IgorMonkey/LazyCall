@@ -1,0 +1,101 @@
+{
+  "purpose": "Desired settings for the public GitHub repository. Settings are applied separately through GitHub; editing this file alone does not change them.",
+  "repository": {
+    "name": "LazyCall",
+    "fullName": "IgorMonkey/LazyCall",
+    "defaultBranch": "main",
+    "topics": [
+      "meeting-assistant",
+      "transcription",
+      "whisper",
+      "electron",
+      "codex",
+      "windows"
+    ],
+    "issuesEnabled": true,
+    "projectsEnabled": false,
+    "wikiEnabled": false
+  },
+  "labels": [
+    {
+      "name": "feature",
+      "color": "1D76DB",
+      "description": "New user-facing capability"
+    },
+    {
+      "name": "bug",
+      "color": "D73A4A",
+      "description": "Unexpected behaviour"
+    },
+    {
+      "name": "documentation",
+      "color": "0075CA",
+      "description": "Documentation change"
+    },
+    {
+      "name": "maintenance",
+      "color": "FBCA04",
+      "description": "Build, dependency, or housekeeping work"
+    },
+    {
+      "name": "skip-changelog",
+      "color": "FFFFFF",
+      "description": "Do not include in generated release notes"
+    },
+    {
+      "name": "good first issue",
+      "color": "7057FF",
+      "description": "Small, scoped entry task"
+    },
+    {
+      "name": "help wanted",
+      "color": "008672",
+      "description": "Community help welcome"
+    },
+    {
+      "name": "provider",
+      "color": "5319E7",
+      "description": "AI provider adapter or capability"
+    },
+    {
+      "name": "ux",
+      "color": "E99695",
+      "description": "User experience or visual design"
+    },
+    {
+      "name": "translation",
+      "color": "0E8A16",
+      "description": "Language or localisation work"
+    }
+  ],
+  "branchProtection": {
+    "branch": "main",
+    "requirePullRequest": true,
+    "requiredApprovingReviewCount": 0,
+    "requiredStatusChecks": [
+      "Build and test on Windows"
+    ],
+    "requireBranchesToBeUpToDate": true,
+    "allowForcePushes": false,
+    "allowDeletions": false
+  },
+  "releaseReview": {
+    "createGithubReleaseAutomatically": false,
+    "publishAssetsAutomatically": false,
+    "enableAutoUpdateAutomatically": false,
+    "firstCandidate": "v0.3.5-alpha.1"
+  },
+  "security": {
+    "privateVulnerabilityReporting": true,
+    "dependabotAlerts": true,
+    "dependabotSecurityUpdates": true,
+    "secretScanning": true,
+    "pushProtection": true
+  },
+  "releasePolicy": {
+    "initialReleaseType": "prerelease",
+    "immutableReleases": true,
+    "neverOverwritePublishedAssets": true,
+    "publishAfterMaintainerReview": true
+  }
+}

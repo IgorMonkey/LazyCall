@@ -1,0 +1,43 @@
+html, body, #root { min-height: 100%; }
+html:has(.compact), body:has(.compact), #root:has(.compact) { height: 100%; min-height: 0; }
+body:has(.compact) { min-width: 0; background: var(--chrome); }
+.compact {
+  height: 100dvh;
+  min-height: 0;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--ink);
+  background: var(--chrome);
+  overflow: hidden;
+}
+.compact-header { min-height: 36px; display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 8px; }
+.compact-header strong { font-size: 18px; line-height: 24px; letter-spacing: -.3px; }
+.compact-content { min-height: 0; flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; }
+.compact-content-body { display: grid; align-content: start; gap: 10px; min-height: 100%; }
+.compact-agent, .compact-eyebrow, .compact-shortcuts { margin: 0; color: var(--secondary); font-size: 12px; line-height: 18px; }
+.compact-eyebrow { display: flex; justify-content: space-between; gap: 8px; }
+.compact-quote, .compact-answer, .compact-state { border: 1px solid var(--line); border-radius: var(--control-radius); background: var(--surface); }
+.compact-quote { padding: 10px 12px; }
+.compact-quote p:last-child { margin: 3px 0 0; font-size: 14px; line-height: 20px; }
+.compact-answer { min-width: 0; padding: 12px; }
+.compact-answer-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.compact-answer > .compact-quote { margin: 0 0 10px; }
+.compact-answer-heading span { color: var(--secondary); font-size: 12px; overflow-wrap: anywhere; }
+.compact-answer p { margin: 0 0 10px; font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
+.compact-answer ul, .compact-answer ol { margin: 0 0 10px; padding-left: 22px; }
+.compact-answer li { margin: 3px 0; font-size: 14px; line-height: 20px; overflow-wrap: anywhere; }
+.compact-answer h3 { margin: 0 0 8px; font-size: 15px; line-height: 20px; }
+.compact-answer a { color: var(--accent); }
+.compact-state { margin: 0; padding: 12px; color: var(--secondary); font-size: 14px; line-height: 20px; }
+.compact-state-error { color: #9a371f; background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); overflow-wrap: anywhere; }
+.compact-actions { display: flex; flex: 0 0 auto; justify-content: flex-end; gap: 8px; }
+.compact-actions .button { width: 100%; }
+.compact-follow { flex: 0 0 auto; display: flex; justify-content: flex-end; }
+.compact-shortcuts { flex: 0 0 auto; text-align: center; }
+@media (max-width: 390px) {
+  .compact { padding: 10px; gap: 8px; }
+  .compact-header .button { padding-inline: 8px; }
+  .compact-shortcuts { font-size: 11px; line-height: 15px; }
+}

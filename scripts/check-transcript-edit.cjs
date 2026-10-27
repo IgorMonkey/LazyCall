@@ -1,0 +1,61 @@
+// Real product main/preload/journal against a local synthetic provider. No media/network/auth.
+const { _electron: electron } = require('playwright');
+const { mkdtemp, readFile, writeFile, mkdir } = require('node:fs/promises');
+const { tmpdir } = require('node:os');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+const until = async (check, label) => { const deadline=Date.now()+10000; while(!await check()) { if(Date.now()>deadline)throw Error(label); await new Promise(r=>setTimeout(r,40)); } };
+(async () => {
+  const data = await mkdtemp(path.join(tmpdir(),'callme-assistant-desktop-corrections-'));
+  const env={...process.env,CALLME_TEST_DATA:data,CALLME_SKIP_WHISPER:'1',CALLME_FIXTURE_FRAME_TEST:'1'}; delete env.ELECTRON_RUN_AS_NODE;
+  let app;
+  const launch=async()=>{
+    app=await electron.launch({executablePath:require('electron'),args:[path.resolve('scripts/fixtures/assistant-main.cjs')],env,timeout:30000});
+    const page=await app.firstWindow(); await page.getByRole('heading',{name:'LazyCall',exact:true}).waitFor();
+    await page.waitForFunction(async()=> (await window.callme.agentStatus()).state==='ready');
+    await app.evaluate(({shell,clipboard})=>{ shell.openExternal=async()=>{}; clipboard.writeText=text=>{global.__copied=text;}; });
+    return page;
+  };
+  try {
+    let page=await launch();
+    const session=await page.evaluate(async()=>{await window.callme.selectWindow('window:synthetic');return window.callme.start();});
+    await page.evaluate(()=>window.callme.audio('remote',0,500,new ArrayBuffer(16000)));
+    await until(async()=> (await page.evaluate(()=>window.callme.listMeetings())).length===1,'saved session');
+    await page.waitForFunction(()=>document.querySelector('.utterance p')?.textContent.includes('FIXTURE_TRANSCRIPT'));
+    const liveError=await page.evaluate(async id=>{try {await window.callme.editTranscript({sessionId:id,lineId:'missing',text:'x',expectedText:'x'});return '';}catch(e){return String(e);}},session.sessionId);
+    assert.match(liveError,/Завершите запись/);
+    await page.evaluate(()=>window.callme.stop());
+    const stopped=await page.evaluate(id=>window.callme.openMeeting(id),session.sessionId);
+    const line=stopped.lines[0]; assert(line);
+    const request=await page.evaluate(()=>window.callme.agentAsk({text:'Summary',mode:'summary',webSearch:false}));
+    await until(async()=> (await page.evaluate(()=>window.callme.agentMessages())).some(m=>m.id===request.requestId && m.state==='done'),'initial summary');
+    let results=await page.evaluate(()=>window.callme.meetingResults()); assert.equal(results.items.length,1);
+    results=await page.evaluate(value=>window.callme.saveMeetingResults({...value,items:value.items.map(item=>({...item,status:'confirmed'}))}),results);
+    let edited=await page.evaluate(value=>window.callme.editTranscript(value),{sessionId:session.sessionId,lineId:line.id,text:'CORRECTED_FIXTURE: поиск по номеру заявки.',expectedText:line.text});
+    assert.equal(edited.line.originalText,line.text); assert.equal(edited.results.transcriptStale,true); assert.equal(edited.results.items[0].evidenceStale,true);
+    const staleError=await page.evaluate(async value=>{try{await window.callme.editTranscript(value);return '';}catch(e){return String(e);}},{sessionId:session.sessionId,lineId:line.id,text:'wrong',expectedText:line.text});
+    assert.match(staleError,/уже изменилась/);
+    await page.evaluate(()=>window.callme.copyMeetingForCodex());
+    assert((await app.evaluate(()=>global.__copied)).includes('требуется повторная проверка'));
+    await app.close(); app=null; page=await launch();
+    const recovered=await page.evaluate(id=>window.callme.openMeeting(id),session.sessionId);
+    assert.equal(recovered.lines[0].text,edited.line.text); assert.equal(recovered.lines[0].originalText,line.text); assert.equal(recovered.results.items[0].evidenceStale,true);
+    const regenerated=await page.evaluate(()=>window.callme.agentAsk({text:'Обнови итог',mode:'summary',webSearch:false}));
+    await until(async()=> (await page.evaluate(()=>window.callme.agentMessages())).some(m=>m.id===regenerated.requestId && m.state==='done'),'updated summary');
+    results=await page.evaluate(()=>window.callme.meetingResults());
+    assert.equal(results.transcriptStale,false); assert(results.items.some(item=>item.status==='confirmed' && item.evidenceStale));
+    const protocol=(await readFile(path.join(data,'fixture-protocol.jsonl'),'utf8')).trim().split('\n').map(JSON.parse);
+    const prompts=protocol.filter(row=>row.method==='turn/start').map(row=>row.params.input.find(i=>i.type==='text').text);
+    assert(prompts.at(-1).includes(edited.line.text));
+    assert(!prompts.at(-1).includes('FIXTURE_GENERATED_DECISION: проверить номер заявки'), 'Invalidated confirmed result must be absent from current fact context');
+    await app.evaluate(({dialog},dest)=>{dialog.showSaveDialog=async()=>({canceled:false,filePath:dest});},path.join(data,'export.md'));
+    await page.evaluate(()=>window.callme.export());
+    assert((await readFile(path.join(data,'export.md'),'utf8')).includes(edited.line.text));
+    const rows=(await readFile(path.join(data,'sessions',session.sessionId,'events.jsonl'),'utf8')).trim().split('\n').map(JSON.parse);
+    assert.equal(rows.find(row=>row.type==='transcript.final').payload.text,line.text);
+    assert.equal(rows.filter(row=>row.type==='transcript.edited').length,1);
+    await mkdir('test-results',{recursive:true});
+    const report={status:'passed',checks:['live editing rejected','optimistic conflict rejected','original journal retained','stale evidence and summary','native clipboard uses warning','relaunch recovery','regeneration keeps confirmed flags','corrected prompt and export'],syntheticOnly:true};
+    await writeFile('test-results/transcript-edit-native.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));
+  }finally {if(app)await app.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

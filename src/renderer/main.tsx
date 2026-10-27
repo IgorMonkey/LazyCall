@@ -1,0 +1,14 @@
+import { createRoot } from "react-dom/client";
+import { App } from "./App";
+import { Compact } from "./Compact";
+import "@fontsource/scada/cyrillic-400.css";
+import "@fontsource/scada/latin-400.css";
+import "@fontsource/scada/cyrillic-700.css";
+import "@fontsource/scada/latin-700.css";
+import "./style.css";
+import "./interaction.css";
+import "./theme.css";
+import { applyTheme, cachedTheme } from "./theme";
+import { I18nProvider } from "./i18n";
+applyTheme(cachedTheme());
+createRoot(document.getElementById("root")!).render(<I18nProvider>{location.hash === "#compact" ? <Compact /> : <App />}</I18nProvider>);

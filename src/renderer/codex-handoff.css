@@ -1,0 +1,9 @@
+.codex-handoff-dialog { width: 600px; max-width: calc(100vw - 40px); max-height: calc(100dvh - 48px); margin: auto; padding: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); overflow: hidden; box-shadow: 0 20px 80px var(--shadow, #24252826); }
+.codex-handoff-dialog[open] { display: flex; flex-direction: column; }
+.codex-handoff-dialog::backdrop { background: #12141666; }
+.codex-handoff-body { padding: 0 24px 24px; overflow-y: auto; min-height: 0; }
+.codex-handoff-body > section + section { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.codex-handoff-body h3, .codex-connection h3 { font-size: 14px; line-height: 22px; margin: 0 0 8px; }
+.codex-handoff-body p { font-size: 14px; line-height: 22px; color: var(--secondary); margin: 0 0 12px; }
+.codex-connection-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.settings-body .codex-connection { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }

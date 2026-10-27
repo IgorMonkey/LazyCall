@@ -1,0 +1,50 @@
+/* Shared interaction layer. It intentionally loads after component styling. */
+button, textarea, .ui-input { transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease, color 150ms ease, transform 100ms ease; }
+button:focus-visible, textarea:focus-visible, .ui-input:focus-visible, .ui-checkbox input:focus-visible, .assistant-message-text a:focus-visible {
+  outline: 0;
+  border-color: var(--focus-border);
+  box-shadow: 0 0 0 2px var(--focus);
+}
+textarea:focus-visible { border-color: var(--focus-border); }
+.ui-input { width: 100%; height: var(--control-height); min-width: 0; border: 1px solid var(--control-border); border-radius: var(--control-radius); padding: 0 var(--control-padding); background: var(--surface); color: var(--ink); font: inherit; font-size: 14px; line-height: 20px; }
+.ui-input:hover:not(:disabled) { border-color: var(--control-border-hover); }
+.ui-input:disabled { color: var(--disabled-ink); background: var(--disabled); cursor: default; }
+.utterance:focus { outline: 0; border-radius: 5px; background: var(--surface-muted); box-shadow: 0 0 0 2px var(--focus); }
+
+.select-wrap { position: relative; min-width: 0; }
+.ui-select {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; appearance: none;
+  border: 1px solid var(--control-border); border-radius: var(--control-radius); width: 100%; height: var(--control-height);
+  padding: 0 12px; background: var(--surface); color: var(--ink); font-size: 14px; font-weight: var(--weight-regular);
+  line-height: 20px; text-align: left; cursor: pointer;
+}
+.ui-select:hover:not(:disabled) { border-color: var(--control-border-hover); background: var(--surface-raised); }
+.ui-select:disabled { color: var(--disabled-ink); background: var(--disabled); border-color: var(--disabled); cursor: default; }
+.ui-select-value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ui-select .icon { width: 16px; height: 16px; flex-basis: 16px; color: var(--secondary); transition: transform 150ms ease; }
+.ui-select[aria-expanded="true"] .icon { transform: rotate(180deg); }
+.ui-select-popover {
+  position: fixed; inset: auto; margin: 0; padding: 4px; border: 1px solid var(--control-border); border-radius: 8px;
+  color: var(--ink); background: var(--surface); box-shadow: 0 8px 24px var(--shadow); overflow: auto; z-index: 2147483647;
+}
+.ui-select-popover:popover-open { display: grid; gap: 1px; opacity: 1; transform: translateY(0); transition: opacity 120ms ease, transform 120ms ease, overlay 120ms allow-discrete, display 120ms allow-discrete; }
+@starting-style { .ui-select-popover:popover-open { opacity: 0; transform: translateY(-3px); } }
+.ui-select-option { width: 100%; min-height: 32px; padding: 6px 8px; border: 0; border-radius: 5px; color: inherit; background: transparent; display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; font: inherit; font-size: 13px; line-height: 20px; }
+.ui-select-option:hover:not(:disabled), .ui-select-option.is-active { background: var(--surface-muted); }
+.ui-select-option[aria-selected="true"] { color: var(--accent); font-weight: var(--weight-medium); }
+.ui-select-option:disabled { color: var(--disabled-ink); cursor: default; }
+.ui-select-option .icon { width: 16px; height: 16px; flex-basis: 16px; }
+
+.settings-dialog { overflow: hidden; max-height: calc(100dvh - 48px); }
+.settings-dialog .settings-form { height: min(620px, calc(100dvh - 48px)); max-height: calc(100dvh - 48px); display: flex; flex-direction: column; overflow: hidden; }
+.settings-dialog .settings-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.settings-dialog .settings-heading, .settings-dialog .settings-actions { flex: 0 0 auto; }
+dialog[open] { animation: dialog-enter 160ms ease-out; }
+dialog[open]::backdrop { animation: backdrop-enter 160ms ease-out; }
+@keyframes dialog-enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes backdrop-enter { from { opacity: 0; } to { opacity: 1; } }
+.assistant-message, .assistant-message-item, .result-item, [role="alert"] { animation: message-enter 120ms ease-out; }
+@keyframes message-enter { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

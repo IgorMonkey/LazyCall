@@ -1,0 +1,39 @@
+name: Предложить функцию
+description: Предложите улучшение LazyCall.
+title: "[Функция]: "
+labels: [feature]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Сначала опишите проблему, а затем вариант реализации. Не включайте реальные данные встречи, скриншоты с приватными данными, учётные данные или фрагменты закрытого исходного кода.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Какую проблему это решит?
+      placeholder: "Во время созвона мне нужно..."
+    validations:
+      required: true
+  - type: textarea
+    id: behaviour
+    attributes:
+      label: Желаемое поведение
+      placeholder: "Когда ..., LazyCall должен ..."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Альтернатива или текущий обходной путь
+  - type: textarea
+    id: context
+    attributes:
+      label: Дополнительный контекст
+      description: Используйте только синтетические примеры.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Проверка приватности
+      options:
+        - label: В предложении нет записей, учётных данных, фрагментов закрытого кода или персональных данных.
+          required: true
