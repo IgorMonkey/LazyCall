@@ -3,11 +3,13 @@
 [![CI](https://github.com/IgorMonkey/LazyCall/actions/workflows/ci.yml/badge.svg)](https://github.com/IgorMonkey/LazyCall/actions/workflows/ci.yml)
 [![Лицензия](https://img.shields.io/github/license/IgorMonkey/LazyCall?label=%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D1%8F)](LICENSE)
 ![Платформа](https://img.shields.io/badge/%D0%BF%D0%BB%D0%B0%D1%82%D1%84%D0%BE%D1%80%D0%BC%D0%B0-Windows%20x64-0078D6)
-![Релиз](https://img.shields.io/badge/%D1%80%D0%B5%D0%BB%D0%B8%D0%B7-0.3.5--alpha.1-ff897a)
+![Релиз](https://img.shields.io/badge/%D1%80%D0%B5%D0%BB%D0%B8%D0%B7-0.3.5-ff897a)
+
+[**Скачать для Windows**](https://github.com/IgorMonkey/LazyCall/releases/latest)
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/main-dark.png">
-  <img src="docs/screenshots/main-light.png" alt="LazyCall: расшифровка, вариант ответа и итоги встречи" width="960">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-main-ru-dark.png">
+  <img src="docs/screenshots/readme-main-ru-light.png" alt="Синтетический пример: расшифровка и ответ о проверке прав" width="960">
 </picture>
 
 **Нейрослоп для нейрослопа.**
@@ -18,19 +20,19 @@
 
 LazyCall помогает восстановить контекст проекта, собранного с AI, во время технического созвона: слушает разговор, сверяется с выбранными актуальными файлами и предлагает формулировку ответа, которую можно проверить.
 
-[English](README.md) · [Скриншоты](docs/SCREENSHOTS.ru.md) · [Как помочь](CONTRIBUTING.ru.md) · [Приватность](docs/PRIVACY.ru.md) · [Планы](docs/ROADMAP.ru.md)
+[English](README.md) · [Скачать](https://github.com/IgorMonkey/LazyCall/releases/latest) · [Скриншоты](docs/SCREENSHOTS.ru.md) · [Как помочь](CONTRIBUTING.ru.md) · [Приватность](docs/PRIVACY.ru.md) · [Планы](docs/ROADMAP.ru.md)
 
-> **Экспериментальная альфа для Windows x64.** Приложение ещё сырое: возможны баги, задержки и неудачные подсказки. Тестируйте, приносите воспроизводимые ошибки и присылайте PR — проект открыт для участия.
+> **Экспериментальный ранний релиз для Windows x64.** Приложение ещё сырое: возможны баги, задержки и неудачные подсказки. Тестируйте, приносите воспроизводимые ошибки и присылайте PR — проект открыт для участия.
 
-## Скачать `0.3.5-alpha.1`
+## Скачать `0.3.5`
 
-Assets лежат в [GitHub release](https://github.com/IgorMonkey/LazyCall/releases/tag/v0.3.5-alpha.1):
+Assets лежат в [GitHub release](https://github.com/IgorMonkey/LazyCall/releases/tag/v0.3.5):
 
-- [`LazyCall-Web-Setup-0.3.5-alpha.1.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5-alpha.1/LazyCall-Web-Setup-0.3.5-alpha.1.exe) — около 820 КиБ; при установке скачивает около 918 МиБ.
-- [`LazyCall-Setup-0.3.5-alpha.1.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5-alpha.1/LazyCall-Setup-0.3.5-alpha.1.exe) — около 919 МиБ; содержит офлайн-payload.
-- [`SHA256SUMS.txt`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5-alpha.1/SHA256SUMS.txt) — проверьте скачанный файл.
+- [`LazyCall-Web-Setup-0.3.5.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5/LazyCall-Web-Setup-0.3.5.exe) — около 820 КиБ; при установке скачивает около 918 МиБ.
+- [`LazyCall-Setup-0.3.5.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5/LazyCall-Setup-0.3.5.exe) — около 919 МиБ; содержит офлайн-payload.
+- [`SHA256SUMS.txt`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5/SHA256SUMS.txt) — проверьте скачанный файл.
 
-Это неподписанные ранние alpha-установщики, поэтому Windows может показать предупреждение. Локально проверены установка, повтор после повреждённой загрузки и удаление; GitHub update feed пока не прошёл end-to-end проверку. Сверяйте checksums и используйте этот релиз только для тестирования.
+Это неподписанные ранние установщики, поэтому Windows может показать предупреждение. Локально проверены установка, повтор после повреждённой загрузки и удаление; GitHub update feed пока не прошёл end-to-end проверку. Сверяйте checksums и используйте этот релиз только для тестирования.
 
 ## Что умеет
 
@@ -87,18 +89,24 @@ yarn test
 - Облачные подсказки требуют доступного провайдера и используют его лимиты.
 - Первый поиск по незнакомому репозиторию может быть медленнее повторного.
 - Интерфейс доступен на русском и английском; есть светлая, тёмная и системная темы.
-- Это неподписанные ранние alpha-установщики. GitHub update feed ещё не прошёл end-to-end проверку.
+- Это неподписанные ранние установщики. GitHub update feed ещё не прошёл end-to-end проверку.
 
 <details>
 <summary>Компактное окно</summary>
 
-<img src="docs/screenshots/compact-live.png" alt="Компактное окно LazyCall с целевой репликой" width="404">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-compact-ru-dark.png">
+  <img src="docs/screenshots/readme-compact-ru-light.png" alt="Синтетический пример подсказки в компактном окне LazyCall" width="404">
+</picture>
 </details>
 
 <details>
 <summary>Итоги встречи</summary>
 
-<img src="docs/screenshots/assistant-results-v7.png" alt="Итоги LazyCall с решениями, задачами и основаниями" width="960">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-results-ru-dark.png">
+  <img src="docs/screenshots/readme-results-ru-light.png" alt="Синтетический пример итогов: решение, задача и открытый вопрос" width="960">
+</picture>
 </details>
 
 ## Как помочь

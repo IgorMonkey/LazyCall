@@ -15,22 +15,28 @@ The **Prepare release review artifacts** workflow accepts the tag and its exact 
 
 ## Publish a draft
 
-Create a draft GitHub prerelease for alpha/beta/rc versions. Upload these canonical filenames for `0.3.5-alpha.1`:
+Create a draft GitHub Release. A plain version such as `0.3.5` is a regular release; use the prerelease flag only for a deliberately suffixed version. Upload these canonical filenames for `0.3.5`:
 
-- `LazyCall-Web-Setup-0.3.5-alpha.1.exe` — small bootstrap.
-- `LazyCall-Setup-0.3.5-alpha.1.exe` — full installer.
-- `lazycall-0.3.5-alpha.1-x64.nsis.7z` — bootstrap payload.
-- `alpha.yml` — update metadata for the full installer.
+- `LazyCall-Web-Setup-0.3.5.exe` — small bootstrap.
+- `LazyCall-Setup-0.3.5.exe` — full installer.
+- `lazycall-0.3.5-x64.nsis.7z` — bootstrap payload.
+- `latest.yml` — update metadata for the full installer.
 - `SHA256SUMS.txt` — hashes using those exact asset names.
 
-Verify the payload URL embedded in the bootstrap, its pinned hash, the full installer's SHA-512 in `alpha.yml`, all SHA-256 sums, asset sizes, and the tagged commit. Finish uploads while the release is a draft. Publish only after review; immutable releases prevent changing the tag or assets afterward.
+Verify the payload URL embedded in the bootstrap, its pinned hash, the full installer's SHA-512 in `latest.yml`, all SHA-256 sums, asset sizes, and the tagged commit. Finish uploads while the release is a draft. Publish only after review; immutable releases prevent changing the tag or assets afterward.
 
 ## Validation and limitations
 
 Test isolated install, launch, download failure, corrupt payload, retry, and uninstall. Verify failures leave an existing installation untouched. Test Codex-found and Codex-missing onboarding. Check user-data compatibility before an upgrade, and prevent installation during recording.
 
-The first public alpha was checked locally for those installer paths and packaged application behaviour. A clean Windows machine without Microsoft VC Runtime and an actual upgrade from an older public release have not yet been verified. The updater driver and GitHub-provider protocol were exercised with local fixtures; an actual published-GitHub update installation remains unverified. Keep these limits in the release notes, alongside the unsigned-build notice. A full stable release needs clean-machine and real upgrade evidence.
+The first public release was checked locally for those installer paths and packaged application behaviour. A clean Windows machine without Microsoft VC Runtime and an actual upgrade from an older public release have not yet been verified. The updater driver and GitHub-provider protocol were exercised with local fixtures; an actual published-GitHub update installation remains unverified. Keep these limits in the release notes, alongside the unsigned-build notice. Broader production use needs clean-machine and real upgrade evidence.
 
 ## Repository settings
 
 [repository-settings.json](../.github/repository-settings.json) records the intended setup; editing it does not apply settings. Verify required Windows CI and pull requests on `main`, no force push/deletion, squash merges, no auto-merge, private vulnerability reporting, and immutable releases in GitHub itself. The maintainer decides which PRs to merge and which candidates to release.
+
+## Download and repository metrics
+
+Run `node scripts/release-stats.cjs` with an authenticated GitHub CLI to see published installer counters. Add `--traffic` for repository visits and clones (push access required, rolling 14-day window), or `--json` for a machine-readable snapshot. For local history, save the JSON under the ignored `test-results/` directory. Run it periodically yourself when needed; no schedule or app telemetry is enabled.
+
+The bootstrap, full installer, and web payload are separate rows. Do not add bootstrap and payload downloads as users. Repeat downloads and updates can affect counters; these metrics cannot tell you completed installations, active users, or retention. The command only reads GitHub aggregate data and does not contact a running LazyCall app.

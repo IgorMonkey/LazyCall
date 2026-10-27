@@ -1,0 +1,101 @@
+/* Materials is one short preparation flow: goal, reusable context, then optional screen detail. */
+.materials-dialog { width: min(760px, calc(100vw - 40px)); max-height: min(760px, calc(100dvh - 40px)); }
+.materials-dialog .settings-heading { border-bottom: 1px solid var(--line); }
+.materials-dialog .settings-actions { background: var(--surface); }
+.materials-dialog .materials-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 20px;
+  padding: 24px;
+  background: var(--surface);
+}
+.materials-dialog .meeting-context-fields { display: grid; gap: 20px; }
+.materials-dialog .field-stacked { margin: 0; }
+.materials-dialog .field-stacked label,
+.materials-dialog .materials-context-group > h3,
+.materials-dialog .materials-screen h3,
+.materials-dialog .materials-section-heading h3 {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: var(--weight-medium);
+  line-height: 20px;
+}
+.materials-dialog .materials-project-strip {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  margin: -4px 0 0;
+  color: var(--secondary);
+  font-size: 13px;
+  line-height: 20px;
+}
+.materials-dialog .materials-project-strip strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--ink); font-weight: var(--weight-medium); white-space: nowrap; }
+.materials-dialog .materials-project-strip span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.materials-dialog .materials-context-group {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-raised);
+}
+.materials-dialog .project-context-panel {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0 0 16px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+.materials-dialog .project-context-panel .materials-section-heading { margin: 0; }
+.materials-dialog .project-context-panel .materials-help { margin: 0; }
+.materials-dialog .project-context-panel .project-context-onboarding { margin-top: -6px; }
+.materials-dialog .project-context-panel .project-folder { display: grid; gap: 2px; }
+.materials-dialog .project-context-panel .project-folder span { color: var(--secondary); font-size: 12px; line-height: 18px; overflow-wrap: anywhere; }
+.materials-dialog .project-context-panel .project-brief { margin: 0; }
+.materials-dialog .materials-documents { display: grid; gap: 10px; }
+.materials-dialog .materials-documents .materials-section-heading { margin: 0; }
+.materials-dialog .context-scope { margin-top: 2px; }
+.materials-dialog .materials-screen {
+  min-width: 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.materials-dialog .materials-screen details { display: block; min-width: 0; }
+.materials-dialog .materials-screen details > :not(summary) { margin-top: 12px; }
+.materials-dialog .materials-screen summary {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: var(--weight-medium);
+  line-height: 20px;
+  list-style: none;
+}
+.materials-dialog .materials-screen summary::-webkit-details-marker { display: none; }
+.materials-dialog .materials-screen summary::after { content: "⌄"; color: var(--secondary); font-size: 15px; font-weight: var(--weight-regular); }
+.materials-dialog .materials-screen details:not([open]) summary::after { transform: rotate(-90deg); }
+.materials-dialog .materials-screen-summary { min-width: 0; margin-left: auto; color: var(--secondary); font-size: 12px; font-weight: var(--weight-regular); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.materials-dialog .materials-screen .screen-caption { margin: 0; }
+.materials-dialog .materials-screen .preview { height: min(220px, 29dvh); border-color: var(--control-border); background: var(--surface-muted); }
+.materials-dialog .materials-screen .materials-help { margin: 0; }
+.materials-dialog .materials-screen .button { justify-self: start; }
+.materials-dialog .capture-scope { margin-top: 0; }
+.materials-dialog .materials-screen-empty { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.materials-dialog .materials-screen-empty > div { display: grid; gap: 4px; }
+.materials-dialog .settings-error { margin: 0; }
+@media (max-width: 560px) {
+  .materials-dialog { width: calc(100vw - 24px); max-width: none; }
+  .materials-dialog .materials-body { padding: 18px; }
+  .materials-dialog .materials-context-group { padding: 14px; }
+  .materials-dialog .materials-screen-empty { align-items: flex-start; flex-direction: column; }
+  .materials-dialog .materials-screen-summary { max-width: 52vw; }
+}

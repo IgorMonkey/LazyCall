@@ -24,6 +24,9 @@ export const translationCatalog: Record<ResolvedLocale, Record<string, string>> 
   },
   en: {
     ...semanticCatalog.en,
+    "Папка и документы сохраняются для следующих встреч проекта.": "Folder and documents are kept for future meetings in this project.",
+    "Сохраняются для следующих встреч без проекта.": "Kept for future meetings without a project.",
+    "К выбору окна": "Choose meeting window", "Окно выбирается перед началом новой встречи.": "The meeting window is chosen before a new meeting starts.", "Кадр появится после начала встречи.": "A preview will appear when the meeting starts.",
     "Модель не найдена. Переустановите LazyCall или повторите загрузку компонентов.": "The speech model is missing. Reinstall LazyCall or retry the component download.",
     "Папка проекта недоступна": "Project folder is unavailable", "Папка подключена": "Folder connected", "Папка проекта не подключена": "Project folder is not connected", "обзор передан": "overview shared", "обзор не подготовлен": "overview not prepared", "документов: {count}": "documents: {count}", "Проект: {name}": "Project: {name}",
     "Здесь появится вариант ответа собеседнику.": "A suggested answer for the participant will appear here.", "Войдите через ChatGPT, чтобы получать подсказки.": "Sign in with ChatGPT to get suggestions.", "Для подсказок отправляем в Codex текст встречи, заметки, выбранные файлы и кадр экрана. Расшифровка работает без входа.": "To provide suggestions, LazyCall sends the meeting transcript, notes, selected files, and a screen frame to Codex. Transcription works without sign-in.",

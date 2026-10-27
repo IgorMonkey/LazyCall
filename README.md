@@ -3,11 +3,13 @@
 [![CI](https://github.com/IgorMonkey/LazyCall/actions/workflows/ci.yml/badge.svg)](https://github.com/IgorMonkey/LazyCall/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/IgorMonkey/LazyCall?label=license)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%20x64-0078D6)
-![Release](https://img.shields.io/badge/release-0.3.5--alpha.1-ff897a)
+![Release](https://img.shields.io/badge/release-0.3.5-ff897a)
+
+[**Download for Windows**](https://github.com/IgorMonkey/LazyCall/releases/latest)
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/main-dark.png">
-  <img src="docs/screenshots/main-light.png" alt="LazyCall: transcript, reply draft, and meeting outcomes" width="960">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-main-en-dark.png">
+  <img src="docs/screenshots/readme-main-en-light.png" alt="Synthetic English demo: transcript and an access-check reply draft" width="960">
 </picture>
 
 **You generated the code. Now explain it.**
@@ -16,19 +18,19 @@ Built with Codex. For projects built with Codex.
 
 LazyCall helps you recover the context of an AI-built project during a technical call: it listens, checks the current files you chose, and drafts a reply you can verify.
 
-[Русский](README.ru.md) · [Screenshots](docs/SCREENSHOTS.md) · [Contributing](CONTRIBUTING.md) · [Privacy](docs/PRIVACY.md) · [Roadmap](docs/ROADMAP.md)
+[Русский](README.ru.md) · [Download](https://github.com/IgorMonkey/LazyCall/releases/latest) · [Screenshots](docs/SCREENSHOTS.md) · [Contributing](CONTRIBUTING.md) · [Privacy](docs/PRIVACY.md) · [Roadmap](docs/ROADMAP.md)
 
-> **Experimental alpha for Windows x64.** Expect bugs, delays, and suggestions that miss the point. Try it, report reproducible problems, and send PRs — contributions are welcome.
+> **Experimental early release for Windows x64.** Expect bugs, delays, and suggestions that miss the point. Try it, report reproducible problems, and send PRs — contributions are welcome.
 
-## Download `0.3.5-alpha.1`
+## Download `0.3.5`
 
-Download assets from the [GitHub release](https://github.com/IgorMonkey/LazyCall/releases/tag/v0.3.5-alpha.1):
+Download assets from the [GitHub release](https://github.com/IgorMonkey/LazyCall/releases/tag/v0.3.5):
 
-- [`LazyCall-Web-Setup-0.3.5-alpha.1.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5-alpha.1/LazyCall-Web-Setup-0.3.5-alpha.1.exe) — about 820 KiB; downloads about 918 MiB during installation.
-- [`LazyCall-Setup-0.3.5-alpha.1.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5-alpha.1/LazyCall-Setup-0.3.5-alpha.1.exe) — about 919 MiB; includes the offline payload.
-- [`SHA256SUMS.txt`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5-alpha.1/SHA256SUMS.txt) — verify the file you download.
+- [`LazyCall-Web-Setup-0.3.5.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5/LazyCall-Web-Setup-0.3.5.exe) — about 820 KiB; downloads about 918 MiB during installation.
+- [`LazyCall-Setup-0.3.5.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5/LazyCall-Setup-0.3.5.exe) — about 919 MiB; includes the offline payload.
+- [`SHA256SUMS.txt`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.5/SHA256SUMS.txt) — verify the file you download.
 
-The installers are unsigned early-alpha builds. Windows may show a warning. Local installer checks covered install, corrupted-download retry, and uninstall; the GitHub update feed has not yet been validated end to end. Review the checksums and use this release only for testing.
+The installers are unsigned early-release builds. Windows may show a warning. Local installer checks covered install, corrupted-download retry, and uninstall; the GitHub update feed has not yet been validated end to end. Review the checksums and use this release only for testing.
 
 ## What it does
 
@@ -85,18 +87,24 @@ This is an early open-source project still being tested on real calls. A suggest
 - Cloud reply drafts require an available provider and use that provider's limits.
 - A first lookup in an unfamiliar repository can be slower than a later one.
 - The interface supports English and Russian, with light, dark, and system themes.
-- The installers are unsigned early-alpha builds. The GitHub update feed is not yet validated end to end.
+- The installers are unsigned early-release builds. The GitHub update feed is not yet validated end to end.
 
 <details>
 <summary>Compact window</summary>
 
-<img src="docs/screenshots/compact-live.png" alt="LazyCall compact window with the reply target" width="404">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-compact-en-dark.png">
+  <img src="docs/screenshots/readme-compact-en-light.png" alt="Synthetic English demo in the LazyCall compact window" width="404">
+</picture>
 </details>
 
 <details>
 <summary>Meeting outcomes</summary>
 
-<img src="docs/screenshots/assistant-results-v7.png" alt="LazyCall outcomes with decisions, tasks, and evidence" width="960">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/readme-results-en-dark.png">
+  <img src="docs/screenshots/readme-results-en-light.png" alt="Synthetic English demo: decisions, task, and open question" width="960">
+</picture>
 </details>
 
 ## Contributing

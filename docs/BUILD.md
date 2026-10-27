@@ -2,7 +2,7 @@
 
 [Русский](BUILD.ru.md)
 
-This guide describes the current Windows x64 public-review pipeline for version `0.3.5-alpha.1`. It creates review artifacts only; it does not publish a GitHub Release or make an update available to users.
+This guide describes the current Windows x64 public-review pipeline for version `0.3.5`. It creates review artifacts only; it does not publish a GitHub Release or make an update available to users.
 
 ## Development checks
 
@@ -64,9 +64,9 @@ yarn pack:public
 yarn dist:web --prepackaged release/public-review/win-unpacked --full-installer
 ```
 
-The build validates this `owner/repository` value and writes the staged GitHub-provider update feed for that exact repository. Because this version is a prerelease, the app's semantic-version configuration resolves the matching `alpha.yml` feed after publication. Its underlying Electron-builder calls use `--publish never`: these commands build files locally and do not create a repository, upload assets, publish a release, or enable updates.
+The build validates this `owner/repository` value and writes the staged GitHub-provider update feed for that exact repository. A normal release uses the matching `latest.yml` feed; a future prerelease channel is a deliberate separate release decision. Its underlying Electron-builder calls use `--publish never`: these commands build files locally and do not create a repository, upload assets, publish a release, or enable updates.
 
-The online installer still needs real end-to-end validation on a suitable clean Windows machine before it can be offered publicly. Verify download, checksum failure, VC runtime download and installation, a missing-Codex path, an installed-Codex path, uninstall behaviour, and upgrade behaviour. Keep release notes and assets under maintainer review.
+The isolated local installer flow has covered installation, corrupted-download retry, and uninstall. A clean Windows machine without the Microsoft VC runtime and a real GitHub-hosted upgrade path are still unverified. Disclose those limits for this early release and keep release notes and assets under maintainer review.
 
 ## Do not use old offline artifacts as public assets
 

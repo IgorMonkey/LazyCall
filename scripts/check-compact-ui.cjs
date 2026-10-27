@@ -44,6 +44,41 @@ const { checkSpacing } = require("./ui-spacing.cjs");
     });
     await page.goto(`http://127.0.0.1:${port}/#compact`);
     await page.getByRole("main", { name: "Подсказки LazyCall" }).waitFor();
+    if (process.argv.includes("--readme-compact")) {
+      await fs.mkdir("test-results", { recursive: true });
+      await page.setViewportSize({ width: 404, height: 500 });
+      const copy = {
+        en: {
+          agent: "Assistant connected",
+          target: "Can a manager see an order from another project?",
+          answer: "No. `src/access.ts` checks the manager’s allowed projects before `src/order-search.ts` runs. A denied request returns no customer data; we are confirming the API contract with Alex by Friday."
+        },
+        ru: {
+          agent: "Помощник подключён",
+          target: "Может ли менеджер увидеть заказ из другого проекта?",
+          answer: "Нет. `src/access.ts` сверяет доступные менеджеру проекты до запуска `src/order-search.ts`. При отказе данные клиента не возвращаются; до пятницы подтвердим контракт API с Алексеем."
+        }
+      };
+      const screenshots = [];
+      for (const locale of ["en", "ru"]) for (const theme of ["light", "dark"]) {
+        const fixture = copy[locale];
+        await page.evaluate(({ locale, theme, fixture }) => window.compactFixture.emit({
+          locale, theme, phase: "live", agent: { state: "ready", label: fixture.agent },
+          target: { id: `readme-${locale}`, source: "remote", startMs: 48_000, endMs: 52_000, text: fixture.target },
+          answerTarget: { id: `readme-${locale}`, source: "remote", startMs: 48_000, endMs: 52_000, text: fixture.target },
+          answer: { id: `readme-answer-${locale}`, role: "assistant", kind: "answer", state: "done", createdAt: Date.now(), text: fixture.answer }, busy: false, error: ""
+        }), { locale, theme, fixture });
+        await page.getByText(fixture.target, { exact: true }).waitFor();
+        await page.getByText(locale === "en" ? /^No\./ : /^Нет\./).first().waitFor();
+        await page.mouse.click(5, 485);
+        await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
+        assert.equal(await page.evaluate(() => document.activeElement?.tagName), "BODY", `compact ${locale} ${theme} must leave focus outside controls`);
+        const file = `readme-compact-${locale}-${theme}.png`;
+        await page.screenshot({ path: `test-results/${file}`, animations: "disabled" }); screenshots.push(file);
+      }
+      assert.deepEqual(errors, [], "compact renderer errors");
+      console.log(JSON.stringify({ status: "passed", screenshots })); return;
+    }
     await page.getByText("Начните запись в основном окне", { exact: false }).waitFor();
     assert(await page.getByRole("button", { name: "Подсказать ответ" }).isDisabled(), "idle compact action must be disabled");
     await page.keyboard.press("Escape");

@@ -9,7 +9,8 @@ const assert = require('node:assert/strict');
   const root = path.resolve(process.env.CALLME_UI_DIST || 'dist');
   const server = http.createServer(async (req, res) => {
     try {
-      const file = path.resolve(root, req.url === '/' ? 'index.html' : '.' + decodeURIComponent(req.url.split('?')[0]));
+      const requestPath = req.url.split('?')[0];
+      const file = path.resolve(root, requestPath === '/' ? 'index.html' : '.' + decodeURIComponent(requestPath));
       if (!file.startsWith(root + path.sep)) throw Error('path');
       res.setHeader('Content-Type', ({ '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2' })[path.extname(file)] || 'application/octet-stream');
       res.end(await fs.readFile(file));
@@ -19,6 +20,9 @@ const assert = require('node:assert/strict');
   const browser = await chromium.launch({ channel: 'msedge', headless: true });
   try {
     const page = await browser.newPage({ viewport: { width: 1264, height: 841 } });
+    const fixtureUrl = 'http://127.0.0.1:' + server.address().port;
+    const readmeFixture = process.argv.some(value => value.startsWith('--readme-'));
+    if (readmeFixture) await page.clock.install({ time: new Date('2026-10-27T09:00:00.000Z') });
     page.setDefaultTimeout(10000);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const errors = [];
@@ -26,6 +30,7 @@ const assert = require('node:assert/strict');
     await page.addInitScript(() => {
       localStorage.setItem('callme.onboarding.dismissed.v1', 'true');
       const callbacks = {};
+      const fixtureLocale = new URLSearchParams(location.search).get('fixtureLocale');
       let current = 'new', context = { goal: '', files: [] }, count = 0, agentCount = 0, preferences = { language: 'ru', locale: 'ru', compute: 'auto', autoHints: false, autoSummary: true, screenContext: true, enterToSend: true, model: '', reasoningEffort: 'default' }, selectedProject = null;
       let projects = [{ id: 'project-1', name: 'Поиск заявок', description: 'Контекст команды поиска', createdAt: '2026-10-25T00:00:00.000Z', updatedAt: '2026-10-25T00:00:00.000Z' }];
       let results = { sessionId: '', revision: 0, items: [] }, knowledge = { folder: null, brief: null }, codexIntegration = { enabled: false, prepared: false }; const transcriptOriginal = new Map();
@@ -104,7 +109,7 @@ const assert = require('node:assert/strict');
         },
         openLink: async url => window.uiFixture.links.push(url),
         copyText: async text => window.uiFixture.copied.push(text),
-        windows: async () => [{ id: 'window:fixture', name: window.uiFixture.windowName || 'Обсуждение проекта — Zoom', thumbnail: canvas.toDataURL() }],
+        windows: async () => [{ id: 'window:fixture', name: window.uiFixture.windowName || (fixtureLocale === 'en' ? 'Request search review — Zoom' : fixtureLocale === 'ru' ? 'Проверка поиска заявок — Zoom' : 'Обсуждение проекта — Zoom'), thumbnail: canvas.toDataURL() }],
         selectWindow: async () => {}, whisperStatus: async () => ({ state: 'ready', label: 'Готово', backend: 'CPU' }),
         start: async () => { current = 'new'; return { sessionId: current }; }, stop: async () => { if (window.uiFixture.stopLine) callbacks.transcript?.(window.uiFixture.stopLine); },
         note: async (text, sessionId) => { if (sessionId !== current) throw Error('Stale session write'); window.uiFixture.writes.push({ current, sessionId, text }); }, export: async () => true, continueInCodex: async () => { window.uiFixture.codex++; },
@@ -123,7 +128,7 @@ const assert = require('node:assert/strict');
       };
       navigator.mediaDevices.enumerateDevices = async () => [];
     });
-    await page.goto('http://127.0.0.1:' + server.address().port);
+    await page.goto(fixtureUrl);
     await page.evaluate(() => document.fonts.ready);
     if (process.argv.includes('--gallery-extra')) {
       await fs.mkdir('test-results', { recursive: true });
@@ -133,9 +138,9 @@ const assert = require('node:assert/strict');
       for (const [tab, name] of [['Запись', 'settings-recording'], ['Помощник', 'settings-assistant'], ['Данные', 'settings-data'], ['Вид', 'settings-appearance'], ['Обновления', 'settings-updates-unconfigured']]) {
         await page.getByRole('tab', { name: tab, exact: true }).click(); await shot(name);
       }
-      await page.evaluate(() => window.uiFixture.emit('updateStatus', { state: 'downloading', currentVersion: '0.3.5-alpha.1', version: '0.3.5-alpha.2', percent: 42, transferred: 42000000, total: 100000000 }));
+      await page.evaluate(() => window.uiFixture.emit('updateStatus', { state: 'downloading', currentVersion: '0.3.5', version: '0.3.6', percent: 42, transferred: 42000000, total: 100000000 }));
       await page.getByText(/42%/).waitFor(); await shot('settings-updates-progress');
-      await page.evaluate(() => window.uiFixture.emit('updateStatus', { state: 'error', currentVersion: '0.3.5-alpha.1', message: 'Не удалось получить обновление. Проверьте подключение и повторите попытку.' }));
+      await page.evaluate(() => window.uiFixture.emit('updateStatus', { state: 'error', currentVersion: '0.3.5', message: 'Не удалось получить обновление. Проверьте подключение и повторите попытку.' }));
       await page.getByText('Не удалось получить обновление. Проверьте подключение и повторите попытку.', { exact: true }).waitFor(); await shot('settings-updates-error');
       await page.keyboard.press('Escape');
       await page.getByRole('button', { name: 'Встречи', exact: true }).click(); await page.getByText('Поиск заявки', { exact: true }).waitFor(); await shot('meetings-list');
@@ -149,6 +154,180 @@ const assert = require('node:assert/strict');
       await page.getByRole('button', { name: 'Итоги встречи', exact: true }).first().click(); await page.getByText('Пока нет расшифровки.', { exact: true }).waitFor(); await page.getByRole('button', { name: 'Добавить пункт вручную', exact: true }).click(); await shot('results-empty-manual');
       await page.keyboard.press('Escape');
       assert.deepEqual(errors, []); console.log(JSON.stringify({ status: 'passed', gallery: ['assistant empty', 'five settings tabs', 'update progress/error', 'meetings list/empty', 'project edit', 'manual result'] })); return;
+    }
+    if (process.argv.includes('--readme-hero')) {
+      await fs.mkdir('test-results', { recursive: true });
+      const copy = {
+        en: {
+          project: 'Request search', projectDescription: 'Access checks for customer request lookup.', window: 'Request search review — Zoom',
+          transcript: [
+            ['remote', 'We need to find an order by request number or customer email.'],
+            ['self', 'The search is scoped to the manager’s projects before it returns a match.'],
+            ['remote', 'Do we need to change the API before Friday?'],
+            ['remote', 'How exactly do we check access before replying?']
+          ],
+          answer: 'Before a search, `src/access.ts` checks the manager role and allowed project IDs. Then `src/order-search.ts` returns only permitted fields; without access it returns no customer data.\n\nYou can say: “We check access before the search, so another team’s request cannot appear in either the result or a suggestion. By Friday we will confirm the API contract and the migration owner.”',
+          result: [
+            ['decision', 'Access is checked before the search; a denied request returns no customer data.'],
+            ['task', 'Alex: confirm the order-search API contract by Friday.'],
+            ['question', 'Do we need an audit event for denied search attempts?']
+          ],
+          resultsButton: 'Meeting results', assignee: 'Alex', dueDate: 'Friday'
+        },
+        ru: {
+          project: 'Поиск заявок', projectDescription: 'Проверка прав при поиске заявок клиентов.', window: 'Проверка поиска заявок — Zoom',
+          transcript: [
+            ['remote', 'Нужно искать заказ по номеру заявки или почте клиента.'],
+            ['self', 'Поиск сначала ограничивается проектами менеджера и только потом возвращает совпадение.'],
+            ['remote', 'Нужны ли изменения API до пятницы?'],
+            ['remote', 'Как именно проверяются права перед ответом?']
+          ],
+          answer: 'Перед поиском `src/access.ts` сверяет роль менеджера и список доступных проектов. Затем `src/order-search.ts` отдаёт только разрешённые поля; при отсутствии доступа возвращается пустой результат без данных клиента.\n\nНа созвоне можно ответить: «Мы проверяем доступ до поиска, поэтому чужая заявка не попадёт ни в результат, ни в подсказку. До пятницы подтвердим контракт API и владельца миграции.»',
+          result: [
+            ['decision', 'Доступ проверяется до поиска; отказ не возвращает данные клиента.'],
+            ['task', 'Алексей: подтвердить контракт order-search API до пятницы.'],
+            ['question', 'Нужно ли логировать отклонённые попытки поиска?']
+          ],
+          resultsButton: 'Итоги встречи', assignee: 'Алексей', dueDate: 'Пятница'
+        }
+      };
+      const screenshots = [];
+      const clearFocus = async label => {
+        await page.mouse.click(30, 500);
+        await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
+        assert.equal(await page.evaluate(() => document.activeElement?.tagName), 'BODY', `${label} must leave focus outside controls`);
+      };
+      const selectScenarioProjectAndWindow = async fixture => {
+        await page.getByRole('button', { name: 'Без проекта', exact: true }).click();
+        await page.getByRole('button', { name: 'Изменить проект Поиск заявок', exact: true }).click();
+        await page.locator('#project-name').fill(fixture.project);
+        await page.locator('#project-description').fill(fixture.projectDescription);
+        await page.getByRole('button', { name: 'Сохранить', exact: true }).click();
+        await page.getByRole('button', { name: 'Без проекта', exact: true }).click();
+        await page.getByRole('button', { name: fixture.project, exact: false }).first().click();
+        await page.getByRole('button', { name: fixture.project, exact: true }).waitFor();
+        const meetingWindow = page.getByRole('combobox', { name: 'Окно созвона', exact: true });
+        if (await page.locator('select.ui-select').count()) await meetingWindow.selectOption('window:fixture');
+        else { await meetingWindow.click(); await page.getByRole('option', { name: fixture.window, exact: true }).click(); }
+      };
+      for (const locale of ['en', 'ru']) for (const theme of ['light', 'dark']) {
+        const fixture = copy[locale];
+        await page.goto(fixtureUrl + '?fixtureLocale=' + locale); await page.evaluate(() => document.fonts.ready);
+        await selectScenarioProjectAndWindow(fixture);
+        if (locale === 'en') {
+          await page.getByRole('button', { name: 'Настройки', exact: true }).click();
+          await page.getByRole('tab', { name: 'Вид', exact: true }).click();
+          await page.locator('#interface-locale').click(); await page.getByRole('option', { name: 'English', exact: true }).click();
+          await page.getByRole('button', { name: 'Save', exact: true }).click();
+        }
+        await page.getByRole('button', { name: locale === 'en' ? 'Start meeting' : 'Начать встречу', exact: true }).waitFor();
+        await page.evaluate(value => { document.documentElement.dataset.theme = value; }, theme);
+        await page.getByRole('button', { name: locale === 'en' ? 'Start meeting' : 'Начать встречу', exact: true }).click();
+        await page.getByText(locale === 'en' ? 'Meeting in progress' : 'Идёт встреча', { exact: true }).waitFor();
+        await page.clock.fastForward(52_000);
+        await page.getByText('00:52', { exact: true }).waitFor();
+        await page.evaluate(({ transcript, answer }) => {
+          transcript.forEach(([source, text], index) => window.uiFixture.emit('transcript', { id: `readme-line-${index}`, source, startMs: (index + 1) * 12_000, endMs: (index + 1) * 12_000 + 4_000, text }));
+          window.uiFixture.emit('assistant', { id: 'readme-answer', role: 'assistant', kind: 'answer', state: 'done', createdAt: Date.now(), text: answer });
+        }, fixture);
+        await page.locator('.transcript').getByText(fixture.transcript.at(-1)[1], { exact: true }).waitFor();
+        await page.getByText(locale === 'en' ? /Before a search,/ : /Перед поиском/).first().waitFor();
+        await clearFocus(`main ${locale} ${theme}`);
+        const main = `readme-main-${locale}-${theme}.png`;
+        await page.screenshot({ path: `test-results/${main}`, animations: 'disabled' }); screenshots.push(main);
+        await page.getByRole('button', { name: fixture.resultsButton, exact: true }).first().click();
+        await page.evaluate(({ items, assignee, dueDate }) => window.uiFixture.emit('results', { sessionId: 'new', revision: 1, items: items.map(([type, text], index) => ({ id: `readme-result-${index}`, type, text, evidenceIds: ['readme-line-3'], status: 'confirmed', author: 'assistant', assignee: type === 'task' ? assignee : '', dueDate: type === 'task' ? dueDate : '' })) }), { items: fixture.result, assignee: fixture.assignee, dueDate: fixture.dueDate });
+        await page.getByText(fixture.result[0][1], { exact: true }).waitFor();
+        await clearFocus(`results ${locale} ${theme}`);
+        const results = `readme-results-${locale}-${theme}.png`;
+        await page.screenshot({ path: `test-results/${results}`, animations: 'disabled' }); screenshots.push(results);
+      }
+      assert.deepEqual(errors, []); console.log(JSON.stringify({ status: 'passed', screenshots })); return;
+    }
+    if (process.argv.includes('--readme-context')) {
+      await fs.mkdir('test-results', { recursive: true });
+      const copy = {
+        en: { project: 'Request search', projectDescription: 'Access checks for customer request lookup.', window: 'Request search review — Zoom', folder: 'Request search', goal: 'Agree search permissions and the API contract by Friday.', brief: '`src/access.ts` scopes managers to permitted projects before `src/order-search.ts` looks up a request. A denied lookup returns no customer fields.', materials: 'Screen & files', goalLabel: 'Meeting goal', connect: 'Connect folder' },
+        ru: { project: 'Поиск заявок', projectDescription: 'Проверка прав при поиске заявок клиентов.', window: 'Проверка поиска заявок — Zoom', folder: 'Поиск заявок', goal: 'Согласовать права поиска и контракт API до пятницы.', brief: '`src/access.ts` ограничивает менеджера доступными проектами до поиска в `src/order-search.ts`. При отказе поиск не возвращает поля клиента.', materials: 'Экран и файлы', goalLabel: 'Цель встречи', connect: 'Подключить папку' }
+      };
+      const screenshots = [];
+      const clearFocus = async label => {
+        await page.mouse.click(25, 520);
+        await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
+        assert.equal(await page.evaluate(() => document.activeElement?.tagName), 'BODY', `${label} must leave focus outside controls`);
+      };
+      const selectScenarioProjectAndWindow = async fixture => {
+        await page.getByRole('button', { name: 'Без проекта', exact: true }).click();
+        await page.getByRole('button', { name: 'Изменить проект Поиск заявок', exact: true }).click();
+        await page.locator('#project-name').fill(fixture.project);
+        await page.locator('#project-description').fill(fixture.projectDescription);
+        await page.getByRole('button', { name: 'Сохранить', exact: true }).click();
+        await page.getByRole('button', { name: 'Без проекта', exact: true }).click();
+        await page.getByRole('button', { name: fixture.project, exact: false }).first().click();
+        const meetingWindow = page.getByRole('combobox', { name: 'Окно созвона', exact: true });
+        if (await page.locator('select.ui-select').count()) await meetingWindow.selectOption('window:fixture');
+        else { await meetingWindow.click(); await page.getByRole('option', { name: fixture.window, exact: true }).click(); }
+      };
+      for (const locale of ['en', 'ru']) for (const theme of ['light', 'dark']) {
+        const fixture = copy[locale];
+        await page.goto(fixtureUrl + '?fixtureLocale=' + locale); await page.evaluate(() => document.fonts.ready);
+        await page.getByRole('button', { name: 'Экран и файлы', exact: true }).click();
+        await page.getByLabel('Цель встречи', { exact: true }).fill(fixture.goal);
+        await page.getByRole('button', { name: 'К выбору окна', exact: true }).click();
+        await page.locator('.materials-dialog').waitFor({ state: 'hidden' });
+        await page.waitForFunction(() => document.activeElement?.id === 'meeting-window');
+        assert.equal(await page.evaluate(() => window.uiFixture.requests.length), 0, 'choosing a meeting window must not ask the assistant');
+        assert.equal(await page.evaluate(() => window.uiFixture.frames.length), 0, 'choosing a meeting window must not capture a frame');
+        await selectScenarioProjectAndWindow(fixture);
+        if (locale === 'en') {
+          await page.getByRole('button', { name: 'Настройки', exact: true }).click();
+          await page.getByRole('tab', { name: 'Вид', exact: true }).click();
+          await page.locator('#interface-locale').click(); await page.getByRole('option', { name: 'English', exact: true }).click();
+          await page.getByRole('button', { name: 'Save', exact: true }).click();
+        }
+        await page.evaluate(value => { document.documentElement.dataset.theme = value; }, theme);
+        await page.evaluate(fixture => {
+          const knowledge = { folder: { name: fixture.folder, path: 'C:\\fixture\\request-search', available: true }, brief: { text: fixture.brief, generatedAt: '2026-10-27T00:00:00.000Z', fingerprint: 'readme-fixture', stale: false, files: [] } };
+          window.callme.projectKnowledge = async () => structuredClone(knowledge);
+          window.callme.connectRepository = async () => structuredClone(knowledge);
+          window.callme.analyzeProject = async () => structuredClone(knowledge);
+        }, fixture);
+        await page.getByRole('button', { name: fixture.materials, exact: true }).click();
+        await page.getByLabel(fixture.goalLabel, { exact: true }).fill(fixture.goal);
+        await page.getByRole('button', { name: fixture.connect, exact: true }).click();
+        await page.locator('.project-context-panel').getByText(fixture.folder, { exact: true }).waitFor();
+        await page.getByText('src/access.ts', { exact: false }).waitFor();
+        await clearFocus(`context ${locale} ${theme}`);
+        const file = `readme-context-${locale}-${theme}.png`;
+        await page.screenshot({ path: `test-results/${file}`, animations: 'disabled' }); screenshots.push(file);
+      }
+      assert.deepEqual(errors, []); console.log(JSON.stringify({ status: 'passed', screenshots })); return;
+    }
+    if (process.argv.includes('--readme-onboarding')) {
+      await fs.mkdir('test-results', { recursive: true });
+      const screenshots = [];
+      for (const locale of ['en', 'ru']) for (const theme of ['light', 'dark']) {
+        await page.reload(); await page.evaluate(() => document.fonts.ready);
+        if (locale === 'en') {
+          await page.getByRole('button', { name: 'Настройки', exact: true }).click();
+          await page.getByRole('tab', { name: 'Вид', exact: true }).click();
+          await page.locator('#interface-locale').click(); await page.getByRole('option', { name: 'English', exact: true }).click();
+          await page.getByRole('button', { name: 'Save', exact: true }).click();
+        }
+        await page.evaluate(value => { document.documentElement.dataset.theme = value; }, theme);
+        const guide = locale === 'en' ? 'How it works' : 'Как пользоваться';
+        const more = locale === 'en' ? 'More' : 'Ещё';
+        await page.getByRole('button', { name: more, exact: true }).click();
+        await page.getByRole('menuitem', { name: guide, exact: true }).click();
+        await page.getByTestId('onboarding-step-1').waitFor();
+        await page.getByTestId('onboarding-next').click(); await page.getByTestId('onboarding-step-2').waitFor();
+        await page.getByTestId('onboarding-next').click(); await page.getByTestId('onboarding-step-3').waitFor();
+        await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
+        assert.equal(await page.evaluate(() => document.activeElement?.tagName), 'BODY', `onboarding ${locale} ${theme} must leave focus outside controls`);
+        const file = `readme-onboarding-${locale}-${theme}.png`;
+        await page.screenshot({ path: `test-results/${file}`, animations: 'disabled' }); screenshots.push(file);
+      }
+      assert.deepEqual(errors, []); console.log(JSON.stringify({ status: 'passed', screenshots })); return;
     }
     if (process.argv.includes('--header')) {
       await fs.mkdir('test-results', { recursive: true });
@@ -869,7 +1048,7 @@ const assert = require('node:assert/strict');
     await page.waitForFunction(count => window.uiFixture.requests.length === count + 1, ctrlRequestCount);
     assert.equal((await page.evaluate(() => window.uiFixture.requests.at(-1))).text, 'Отправить с Ctrl+Enter');
     await cancelAssistant();
-    await page.getByRole('checkbox', { name: 'Искать в интернете', exact: true }).check();
+    await page.getByRole('checkbox', { name: 'Загуглить', exact: true }).check();
     await composer.fill('Найди рекомендации по поиску');
     const researchRequestCount = await requestCount();
     await page.getByRole('button', { name: 'Спросить по записи', exact: true }).click();

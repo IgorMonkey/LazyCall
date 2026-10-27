@@ -1,6 +1,6 @@
 # LazyCall changelog
 
-## 0.3.5-alpha.1 — first public alpha
+## 0.3.5 — first public release
 
 - Optional discovery and selection of an installed Codex CLI.
 - Russian/English UI and system language preference.
@@ -11,7 +11,7 @@
 - Public-release preparation: external Microsoft runtime prerequisite,
   explicit update controls, contributor guides and release checks.
 
-This unsigned early alpha is for testing. The local installer flow covered install, corrupted-download retry, and uninstall. The GitHub update feed is not yet validated end to end.
+This unsigned early release is for testing. The local installer flow covered install, corrupted-download retry, and uninstall. The GitHub update feed is not yet validated end to end.
 
 ## 0.3.4 — local preview
 

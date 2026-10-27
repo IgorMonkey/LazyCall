@@ -21,13 +21,7 @@ This is a project convention layered on the GitHub Flow model; see the [GitHub F
 
 `package.json` is the single source of truth for the application version. A release tag is exactly `v<package.json version>` and points at the exact commit whose assets are released.
 
-The first public train is `0.3.5-alpha.1`. The older `0.3.4` builds were local previews, which is why the public line does not start at `0.1`. The intended sequence is:
-
-```text
-0.3.5-alpha.1 → 0.3.5-alpha.2 → … → 0.3.5-beta.1 → … → 0.3.5-rc.1 → … → 0.3.5
-```
-
-Fixes during the train advance the prerelease number, for example `0.3.5-alpha.2`. After stable `0.3.5`, a compatible fix is `0.3.6`; a compatible feature is `0.4.0`. While the major version is zero, a breaking change advances the minor version as well and must carry explicit migration notes, for example `0.4.0` after `0.3.x`. From `1.0.0` onward, use SemVer majors for breaking changes, minors for backward-compatible features, and patches for backward-compatible fixes.
+The first public release is `0.3.5`. The older `0.3.4` builds were local previews, which is why the public line does not start at `0.1`. A compatible fix after `0.3.5` is `0.3.6`; a compatible feature is `0.4.0`. While the major version is zero, a breaking change advances the minor version as well and must carry explicit migration notes, for example `0.4.0` after `0.3.x`. A prerelease suffix is reserved for a future deliberate prerelease decision. From `1.0.0` onward, use SemVer majors for breaking changes, minors for backward-compatible features, and patches for backward-compatible fixes.
 
 Compatibility covers user projects, saved settings, transcripts, exports, and the provider contract—not only source-code APIs. A change that makes one of those unreadable, changes its meaning, or silently changes provider behavior is breaking unless a documented compatible migration exists.
 

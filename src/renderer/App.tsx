@@ -347,7 +347,7 @@ export function App() {
     {results.transcriptStale && phase === "done" && <div className="transcript-stale-notice" role="status"><span>{t("Расшифровка исправлена. Прежние итоги устарели.")}</span><Button size="compact" variant="text" onClick={() => setResultsOpen(old => old + 1)}>{t("Проверить итоги")}</Button></div>}
     <main className="workspace">
       <section className="conversation" aria-label={t("Расшифровка встречи")}>
-        <div className="pane-header"><h2>{t("Расшифровка")}</h2><Materials source={source} preview={preview} frameAt={frameAt} phase={phase} epoch={sessionEpoch} project={workspace.project} onSnapshot={() => { if (!capture.current?.snapshot()) report(t("Кадр пока недоступен. Повторите через секунду."), "info"); }} /></div>
+        <div className="pane-header"><h2>{t("Расшифровка")}</h2><Materials source={source} preview={preview} frameAt={frameAt} phase={phase} epoch={sessionEpoch} project={workspace.project} onSnapshot={() => { if (!capture.current?.snapshot()) report(t("Кадр пока недоступен. Повторите через секунду."), "info"); }} onChooseWindow={phase === "idle" ? () => window.setTimeout(() => document.getElementById("meeting-window")?.focus(), 0) : undefined} /></div>
         <div className="transcript" ref={transcript} onScroll={onTranscriptScroll}>
           <div ref={transcriptBody}>
           {lines.length === 0 ? <div className="empty-transcript">
