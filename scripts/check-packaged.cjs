@@ -1,5 +1,5 @@
 const { _electron: electron } = require('playwright');
-const { mkdtemp, readFile, readdir, mkdir, writeFile, access } = require('node:fs/promises');
+const { mkdtemp, readFile, readdir, mkdir, writeFile, access, realpath } = require('node:fs/promises');
 const { tmpdir } = require('node:os');
 const path = require('node:path');
 const assert = require('node:assert/strict');
@@ -8,14 +8,14 @@ const assert = require('node:assert/strict');
   const executable = path.resolve(process.env.CALLME_PACKAGED_EXE || 'release/win-unpacked/LazyCall.exe');
   const publicLight = process.env.CALLME_PUBLIC_LIGHT === '1';
   await access(executable);
-  const data = await mkdtemp(path.join(tmpdir(), 'callme-packaged-'));
+  const data = await realpath(await mkdtemp(path.join(tmpdir(), 'callme-packaged-')));
   const env = { ...process.env }; delete env.ELECTRON_RUN_AS_NODE;
   const instance = await electron.launch({ executablePath: executable, args: ['--user-data-dir=' + data], env, timeout: 30000 });
   const errors = [];
   try {
     const runtime = await instance.evaluate(({ app }) => ({ version: app.getVersion(), packaged: app.isPackaged, data: app.getPath('userData'), resources: process.resourcesPath, app: app.getAppPath() }));
     // Stop before any test writes if this Electron build ignores isolation flags.
-    assert.equal(path.resolve(runtime.data).toLowerCase(), path.resolve(data).toLowerCase(), 'Packaged test must use isolated userData');
+    assert.equal((await realpath(runtime.data)).toLowerCase(), data.toLowerCase(), 'Packaged test must use isolated userData');
     assert.equal(runtime.packaged, true);
     assert(runtime.resources.toLowerCase().startsWith(path.dirname(executable).toLowerCase()));
     if (publicLight) {
@@ -143,7 +143,7 @@ const assert = require('node:assert/strict');
     });
     assert.equal(imported.files[0].relativePath, 'README.md');
     const knowledge = await page.evaluate(() => window.callme.projectKnowledge());
-    assert.equal(path.resolve(knowledge.folder.path), path.resolve(contextDirectory));
+    assert.equal((await realpath(knowledge.folder.path)).toLowerCase(), (await realpath(contextDirectory)).toLowerCase());
     assert.equal(knowledge.folder.available, true);
     const packedFiles = require('@electron/asar').listPackage(runtime.app).map(file => file.replaceAll('\\', '/'));
     for (const required of ['/assets/lazycall-icon.png', '/assets/lazycall-icon.ico', '/assets/lazycall-logo.png', '/assets/lazycall-wordmark.svg', '/assets/lazycall-lockup.svg', '/assets/lazycall-lockup-light.svg', '/licenses/Scada-OFL.txt']) assert(packedFiles.includes(required), 'Missing packaged asset/license: ' + required);
