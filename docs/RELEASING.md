@@ -11,7 +11,7 @@ Releases are selected and published by the maintainer. The build workflow prepar
 3. Use synthetic meeting and project data in screenshots. Check assets and logs for private content, credentials, and local paths.
 4. Create an annotated `v<version>` tag at this exact source commit. Never move a published tag or replace published assets.
 
-The **Prepare release review artifacts** workflow accepts the tag and its exact commit/ref. It verifies their identity, uses pinned Yarn, runs checks, creates the public stage and web/full installers, and stores review artifacts for 14 days. It has no publication permission.
+The **Prepare release review artifacts** workflow requires an exact 40-character source commit SHA. Supply the release tag to verify its version and commit identity; omit the tag when reviewing dependency or build changes before a release. Untagged runs do not create tags or releases. The workflow uses pinned Yarn, runs checks, creates the public stage and web/full installers, and stores review artifacts for 14 days under the tag or source SHA. It has no publication permission.
 
 ## Publish a draft
 

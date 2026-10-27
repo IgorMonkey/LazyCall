@@ -5,12 +5,15 @@ import { promisify } from "node:util";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 
+const require = createRequire(import.meta.url);
+const { getPath7za } = require("app-builder-lib/out/toolsets/7zip");
 const exec = promisify(execFile);
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const whisper = path.join(project, "runtime", "whisper");
 const source = path.join(project, "runtime", "vc-redist", "vc_redist.x64.exe");
-const sevenZip = path.join(project, "node_modules", "electron-winstaller", "vendor", "7z.exe");
+const sevenZip = await getPath7za();
 const manifestPath = path.join(whisper, "manifest.json");
 const licensePath = path.join(whisper, "LICENSE-Microsoft-VC.txt");
 
