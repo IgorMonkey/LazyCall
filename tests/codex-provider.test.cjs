@@ -1,8 +1,9 @@
+const { mkdtemp } = require('./temporary.cjs');
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const { EventEmitter } = require("node:events");
 const { PassThrough, Writable } = require("node:stream");
-const { mkdtemp, writeFile } = require("node:fs/promises");
+const { writeFile } = require("node:fs/promises");
 const { tmpdir } = require("node:os");
 const path = require("node:path");
 const childProcess = require("node:child_process");

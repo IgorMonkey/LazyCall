@@ -1,6 +1,7 @@
+const { mkdtemp } = require('./temporary.cjs');
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { mkdtemp, mkdir, readFile, writeFile, lstat, symlink } = require("node:fs/promises");
+const { mkdir, readFile, writeFile, lstat, symlink } = require("node:fs/promises");
 const { tmpdir } = require("node:os");
 const { randomUUID } = require("node:crypto");
 const { spawn } = require("node:child_process");

@@ -1,6 +1,7 @@
+const { mkdtemp } = require('./temporary.cjs');
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { mkdtemp, mkdir, symlink, writeFile } = require("node:fs/promises");
+const { mkdir, symlink, writeFile } = require("node:fs/promises");
 const { tmpdir } = require("node:os");
 const path = require("node:path");
 
