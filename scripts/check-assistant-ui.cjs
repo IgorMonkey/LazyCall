@@ -112,6 +112,7 @@ const { execFileSync } = require('node:child_process');
         openLink: async url => window.uiFixture.links.push(url),
         copyText: async text => window.uiFixture.copied.push(text),
         windows: async () => [{ id: 'window:fixture', name: window.uiFixture.windowName || (fixtureLocale === 'en' ? 'Request search review — Zoom' : fixtureLocale === 'ru' ? 'Проверка поиска заявок — Zoom' : 'Обсуждение проекта — Zoom'), thumbnail: canvas.toDataURL() }],
+        prepareMicrophone: async () => 'fixture-only', finishMicrophone: async () => {},
         selectWindow: async () => {}, whisperStatus: async () => ({ state: 'ready', label: 'Готово', backend: 'CPU' }),
         start: async () => { current = 'new'; return { sessionId: current }; }, stop: async () => { if (window.uiFixture.stopLine) callbacks.transcript?.(window.uiFixture.stopLine); },
         note: async (text, sessionId) => { if (sessionId !== current) throw Error('Stale session write'); window.uiFixture.writes.push({ current, sessionId, text }); }, export: async () => true, continueInCodex: async () => { window.uiFixture.codex++; },

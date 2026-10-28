@@ -23,6 +23,12 @@ export const translationCatalog: Record<ResolvedLocale, Record<string, string>> 
     "{key} — unavailable or occupied": "{key} — недоступно или занято", "{key} — suggest answer": "{key} — подсказать ответ", "Escape — hide window.": "Escape — скрыть окно."
   },
   en: {
+    "При открытии списка кратко включаем микрофон. Звук не сохраняется.": "Opening this list briefly accesses the microphone. No audio is saved.",
+    "Ищем микрофоны…": "Finding microphones…",
+    "Разрешите доступ к микрофону в настройках Windows и попробуйте ещё раз.": "Allow microphone access in Windows settings and try again.",
+    "Не найден микрофон. Подключите устройство и попробуйте ещё раз.": "No microphone found. Connect a device and try again.",
+    "Не удалось проверить микрофоны. Проверьте подключение устройства и повторите попытку.": "Could not check microphones. Check the device connection and try again.",
+    "Проверка микрофона заняла слишком много времени. Попробуйте ещё раз.": "Checking the microphone took too long. Please try again.",
     ...semanticCatalog.en,
     "Папка и документы сохраняются для следующих встреч проекта.": "Folder and documents are kept for future meetings in this project.",
     "Сохраняются для следующих встреч без проекта.": "Kept for future meetings without a project.",

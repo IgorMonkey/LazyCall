@@ -47,6 +47,19 @@ const assert = require("node:assert/strict");
     assert(await page.getByRole("button", { name: "Начать встречу", exact: true }).isDisabled(), "Start must require an explicit source");
     const materials = page.getByRole("dialog", { name: "Материалы встречи", exact: true });
     await page.getByRole("textbox", { name: "Заметки", exact: true }).fill("Обсудить поиск по номеру заявки.");
+    await page.evaluate(() => {
+      const original = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+      window.__microphoneSelectionChecks = [];
+      navigator.mediaDevices.getUserMedia = async constraints => {
+        const stream = await original(constraints);
+        const requested = constraints.audio?.deviceId?.exact;
+        if (requested) window.__microphoneSelectionChecks.push({ requested, actual: stream.getAudioTracks()[0].getSettings().deviceId });
+        return stream;
+      };
+    });
+    await page.getByRole('combobox', { name: 'Микрофон', exact: true }).click();
+    await page.getByRole('option').filter({ hasText: /Fake/ }).first().waitFor();
+    await page.getByRole('option').filter({ hasText: /Fake/ }).last().click();
     await instance.evaluate(async ({ BrowserWindow }) => {
       const target = new BrowserWindow({ width: 620, height: 430, show: true, title: "LazyCall — тест демонстрации", webPreferences: { nodeIntegration: false, sandbox: true } });
       await target.loadURL("data:text/html;charset=utf-8," + encodeURIComponent('<title>LazyCall — тест демонстрации</title><body style="margin:0;background:#202328;color:#eee;font:24px Segoe UI;padding:40px"><h1 style="font-size:30px">Тест демонстрации</h1><p>Заявка № 1042</p><p style="color:#c8ae96">Синтетический экран для проверки захвата</p></body>'));
@@ -73,6 +86,8 @@ const assert = require("node:assert/strict");
     });
     await page.getByRole("button", { name: "Начать встречу", exact: true }).click();
     await page.getByText("Идёт встреча", { exact: true }).waitFor({ timeout: 15000 });
+    const chosenMicrophone = await page.evaluate(() => window.__microphoneSelectionChecks);
+    assert(chosenMicrophone.length === 1 && chosenMicrophone[0].actual === chosenMicrophone[0].requested, 'Recording must use the explicitly chosen microphone');
     assert(await page.getByRole("combobox", { name: "Микрофон", exact: true }).isDisabled(), "Live meeting must disable custom selects");
     assert(await page.getByRole("combobox", { name: "Окно созвона", exact: true }).isDisabled(), "Live meeting must disable custom selects");
     await page.screenshot({ path: "test-results/callme-live.png" });

@@ -118,6 +118,8 @@ export interface DesktopApi {
   saveSettings(values: AppSettings): Promise<AppSettings>;
   openDataFolder(): Promise<void>;
   windows(): Promise<WindowSource[]>;
+  prepareMicrophone(): Promise<string>;
+  finishMicrophone(token: string): Promise<void>;
   selectWindow(id: string): Promise<void>;
   whisperStatus(): Promise<WhisperStatus>;
   start(): Promise<{ sessionId: string }>;

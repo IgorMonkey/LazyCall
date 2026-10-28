@@ -83,7 +83,7 @@ function optionsFromChildren(children: ReactNode): SelectOption[] {
 }
 
 /** A select-shaped control without the platform popup, preserving select's value/onChange API. */
-export function Select({ className = "", children, disabled = false, value, defaultValue, onChange, id, title, autoFocus, tabIndex, "aria-label": ariaLabel, "aria-describedby": ariaDescribedBy }: SelectHTMLAttributes<HTMLSelectElement>) {
+export function Select({ className = "", children, disabled = false, value, defaultValue, onChange, onOpen, id, title, autoFocus, tabIndex, "aria-label": ariaLabel, "aria-describedby": ariaDescribedBy }: SelectHTMLAttributes<HTMLSelectElement> & { onOpen?: () => void }) {
   const options = optionsFromChildren(children);
   const controlled = value !== undefined;
   const [internalValue, setInternalValue] = useState(String(defaultValue ?? options[0]?.value ?? ""));
@@ -123,6 +123,7 @@ export function Select({ className = "", children, disabled = false, value, defa
   };
   const show = (index = selectedIndex) => {
     if (disabled || !options.length) return;
+    onOpen?.();
     setActiveIndex(options[index]?.disabled ? firstEnabled() : index);
     setOpen(true);
   };
