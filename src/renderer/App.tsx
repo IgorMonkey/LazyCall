@@ -39,6 +39,9 @@ export function App() {
   const [sourceId, setSourceId] = useState("");
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([]);
   const [micId, setMicId] = useState("");
+  const [microphoneChecking, setMicrophoneChecking] = useState(false);
+  const microphoneCheckPending = useRef(false);
+  const microphoneRefreshNeeded = useRef(true);
   const [status, setStatus] = useState<WhisperStatus>({ state: "loading", label: "Проверяем Whisper…", backend: null });
   const [phase, setPhase] = useState<"idle" | "starting" | "live" | "paused" | "stopping" | "done">("idle");
   const [pauseChanging, setPauseChanging] = useState(false);
@@ -82,7 +85,43 @@ export function App() {
   const report = (message: string, severity: "info" | "error" = "error") => {
     setMessages(old => [...old.slice(-3), { message, severity }]);
   };
+  const updateMicrophones = (devices: MediaDeviceInfo[]) => {
+    const available = devices.filter(device => device.kind === "audioinput" && device.deviceId && device.label);
+    // Outside a recording, Chromium redacts labels again after the probe ends.
+    // Keep the successfully discovered list until another explicit probe refreshes it.
+    if (available.length) {
+      setMicrophones(available);
+      setMicId(old => !old || available.some(device => device.deviceId === old) ? old : "");
+    }
+  };
+  const discoverMicrophones = async () => {
+    if (disabled || microphoneCheckPending.current || !microphoneRefreshNeeded.current) return;
+    microphoneCheckPending.current = true; setMicrophoneChecking(true);
+    let token: string | undefined, stream: MediaStream | undefined, expired = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      token = await window.callme.prepareMicrophone();
+      const timeout = new Promise<never>((_, reject) => { timer = setTimeout(() => { expired = true; reject(new Error("Проверка микрофона заняла слишком много времени. Попробуйте ещё раз.")); }, 8000); });
+      const acquisition = navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(value => {
+        if (expired) { value.getTracks().forEach(track => track.stop()); throw new Error("Проверка микрофона завершена."); }
+        return value;
+      });
+      stream = await Promise.race([acquisition, timeout]);
+      const devices = await Promise.race([navigator.mediaDevices.enumerateDevices(), timeout]);
+      updateMicrophones(devices);
+      microphoneRefreshNeeded.current = false;
+    } catch (error) {
+      report(error instanceof DOMException ? (error.name === "NotAllowedError" ? "Разрешите доступ к микрофону в настройках Windows и попробуйте ещё раз." :
+        error.name === "NotFoundError" ? "Не найден микрофон. Подключите устройство и попробуйте ещё раз." : "Не удалось проверить микрофоны. Проверьте подключение устройства и повторите попытку.") : error instanceof Error ? error.message : String(error));
+    } finally {
+      expired = true; clearTimeout(timer);
+      stream?.getTracks().forEach(track => track.stop());
+      if (token) await window.callme.finishMicrophone(token).catch(() => {});
+      microphoneCheckPending.current = false; setMicrophoneChecking(false);
+    }
+  };
   const refresh = async () => {
+    microphoneRefreshNeeded.current = true;
     setRefreshing(true);
     try {
       const windows = await window.callme.windows();
@@ -91,7 +130,7 @@ export function App() {
     } catch (e) { report(String(e)); }
     finally { setRefreshing(false); }
     // Device enumeration can wait for an active document. It must not hide the window list.
-    void navigator.mediaDevices.enumerateDevices().then(devices => setMicrophones(devices.filter(d => d.kind === "audioinput"))).catch(() => {});
+    void navigator.mediaDevices.enumerateDevices().then(updateMicrophones).catch(() => {});
   };
   useEffect(() => {
     void refresh();
@@ -124,7 +163,7 @@ export function App() {
         if (!value.sessionId || !sessionId.current || value.sessionId === sessionId.current) setResults(value);
       })
     ];
-    const onDeviceChange = () => { void navigator.mediaDevices.enumerateDevices().then(devices => setMicrophones(devices.filter(d => d.kind === "audioinput"))); };
+    const onDeviceChange = () => { microphoneRefreshNeeded.current = true; void navigator.mediaDevices.enumerateDevices().then(updateMicrophones).catch(() => {}); };
     navigator.mediaDevices.addEventListener("devicechange", onDeviceChange);
     return () => { off.forEach(fn => fn()); navigator.mediaDevices.removeEventListener("devicechange", onDeviceChange); };
   }, []);
@@ -156,7 +195,7 @@ export function App() {
   }, [note, hasSession, sessionEpoch, loadingMeeting, phase]);
 
   const start = async () => {
-    if (disabled || !sourceId) return;
+    if (disabled || microphoneCheckPending.current || !sourceId) return;
     noteEpoch.current++;
     autoSummaryAttempted.current = false; setAutoSummaryPending(false);
     setSessionEpoch(old => old + 1);
@@ -306,9 +345,10 @@ export function App() {
 
     {phase === "done" ? <section className="post-recording" aria-label={t("Завершённая запись")}><div><strong>{completionSaved ? t("Встреча сохранена") : t("Запись завершена с ошибкой")}</strong><span>{time(elapsed)}</span></div><div className="done-actions"><Button variant="primary" onClick={() => setResultsOpen(old => old + 1)}>{autoSummaryPending || assistantMessages.some(message => message.state === "streaming" && message.kind === "summary") ? t("Составляем итоги…") : t("Итоги встречи")}</Button><CodexHandoff disabled={postActionBusy} beforeTransfer={prepareCodexTransfer} onError={report} onNotice={message => report(message, "info")} /><Button variant="quiet" disabled={postActionBusy} title={postActionBusy ? t("Дождитесь ответа или остановите его") : t("Подготовить новую встречу")} onClick={startFresh}>{t("Новая встреча")}</Button></div></section> : <><section className="setup" aria-label={t("Источники встречи")}>
       <Field id="microphone" label={t("Микрофон")} icon="mic">
-        <Select id="microphone" aria-label={t("Микрофон")} disabled={disabled} value={micId} onChange={e => setMicId(e.target.value)}>
+        <Select id="microphone" aria-label={t("Микрофон")} disabled={disabled} value={micId} onOpen={() => void discoverMicrophones()} title={t("При открытии списка кратко включаем микрофон. Звук не сохраняется.")} onChange={e => setMicId(e.target.value)}>
           <option value="">{t("По умолчанию")}</option>
-          {microphones.filter(d => d.deviceId && d.deviceId !== "default").map((d, i) => <option key={d.deviceId} value={d.deviceId}>{d.label || t("Микрофон {number}", { number: i + 1 })}</option>)}
+          {microphoneChecking && <option value="checking" disabled>{t("Ищем микрофоны…")}</option>}
+          {microphones.filter(d => d.deviceId && d.deviceId !== "default" && d.deviceId !== "communications").map((d, i) => <option key={d.deviceId} value={d.deviceId}>{d.label || t("Микрофон {number}", { number: i + 1 })}</option>)}
         </Select>
       </Field>
       <Field id="meeting-window" label={t("Окно созвона")} icon="screen">
@@ -317,12 +357,12 @@ export function App() {
           {sources.map(s => <option key={s.id} value={s.id}>{s.id.startsWith("screen:") ? t("Весь экран: ") : ""}{s.name}</option>)}
         </Select>
       </Field>
-      <IconButton icon="refresh" loading={refreshing} disabled={disabled} onClick={() => void refresh()} aria-label="Обновить список окон и устройств" title="Обновить окна и устройства" />
+      <IconButton icon="refresh" loading={refreshing} disabled={disabled || microphoneChecking} onClick={() => void refresh()} aria-label="Обновить список окон и устройств" title="Обновить окна и устройства" />
       <div className="start-control">
         <div className={"timer " + (phase === "live" ? "is-live" : "")} aria-label={"Длительность встречи: " + time(elapsed)}><span className="status-dot" /><span>{time(elapsed)}</span></div>
         {phase === "live" || phase === "paused" ?
           <Button variant="stop" icon="stop" disabled={pauseChanging} onClick={() => void stop()}>{t("Завершить")}</Button> :
-          <Button variant="primary" icon="play" loading={phase === "starting" || phase === "stopping"} disabled={disabled || status.state !== "ready" || !sourceId} onClick={() => void start()}
+          <Button variant="primary" icon="play" loading={phase === "starting" || phase === "stopping"} disabled={disabled || microphoneChecking || status.state !== "ready" || !sourceId} onClick={() => void start()}
             title={status.state !== "ready" ? readyLabel : !sourceId ? "Выберите окно созвона" : "Включить микрофон, системный звук и захват выбранного окна"}>
             {phase === "starting" ? t("Подключаем…") : phase === "stopping" ? t("Завершаем…") : hasSession ? t("Новая встреча") : t("Начать встречу")}
           </Button>}

@@ -35,6 +35,7 @@ let compact: CompactWindow | null = null;
 let selectedId = "";
 let meeting: MeetingState | null = null;
 let accepting = false;
+let microphoneProbe: { token: string; until: number } | null = null;
 let capturePaused = false;
 let stopping: Promise<void> | null = null;
 let frames = 0;
@@ -425,12 +426,30 @@ app.whenReady().then(async () => {
     })();
   });
   win.webContents.on("will-navigate", (event, url) => { if (url !== rendererUrl) event.preventDefault(); });
-  session.defaultSession.setPermissionRequestHandler((contents, permission, callback) => {
-    callback(contents === win.webContents && accepting && (permission === "media" || permission === "display-capture"));
+  const microphoneAccess = () => accepting || (microphoneProbe !== null && Date.now() < microphoneProbe.until);
+  session.defaultSession.setPermissionRequestHandler((contents, permission, callback, details) => {
+    const ownFrame = contents === win.webContents && details.isMainFrame && details.requestingUrl === rendererUrl;
+    const mediaTypes = (details as Electron.MediaAccessPermissionRequest).mediaTypes;
+    callback(ownFrame && (permission === "display-capture" ? accepting :
+      permission === "media" && microphoneAccess() && !!mediaTypes?.length && mediaTypes.every(type => type === "audio")));
   });
-  session.defaultSession.setPermissionCheckHandler((contents, permission) =>
-    contents === win.webContents && accepting && (permission === "media" || permission === "display-capture")
+  session.defaultSession.setPermissionCheckHandler((contents, permission, _origin, details) =>
+    contents === win.webContents && details.isMainFrame && details.requestingUrl === rendererUrl &&
+    (permission === "display-capture" ? accepting : permission === "media" && details.mediaType === "audio" && microphoneAccess())
   );
+  ipcMain.handle("microphone:prepare", event => {
+    trusted(event);
+    if (event.senderFrame !== win.webContents.mainFrame || accepting || stopping) throw new Error("Завершите запись перед выбором микрофона.");
+    if (microphoneProbe && Date.now() < microphoneProbe.until) throw new Error("Проверка микрофонов уже выполняется.");
+    const token = randomUUID();
+    microphoneProbe = { token, until: Date.now() + 10000 };
+    return token;
+  });
+  ipcMain.handle("microphone:finish", (event, token: unknown) => {
+    trusted(event);
+    if (event.senderFrame !== win.webContents.mainFrame) throw new Error("Недопустимый источник IPC");
+    if (typeof token === "string" && microphoneProbe?.token === token) microphoneProbe = null;
+  });
   session.defaultSession.setDisplayMediaRequestHandler(async (request, callback) => {
     if (!accepting || !request.frame || request.frame !== win.webContents.mainFrame || !selectedId) { callback({}); return; }
     try {
