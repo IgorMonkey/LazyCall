@@ -18,7 +18,7 @@ Built with Codex. For projects built with Codex.
 
 LazyCall helps you recover the context of an AI-built project during a technical call: it listens, checks the current files you chose, and drafts a reply you can verify.
 
-[Русский](README.ru.md) · [Download](https://github.com/IgorMonkey/LazyCall/releases/latest) · [Screenshots](docs/SCREENSHOTS.md) · [Contributing](CONTRIBUTING.md) · [Privacy](docs/PRIVACY.md) · [Roadmap](docs/ROADMAP.md)
+[Русский](README.ru.md) · [Download](https://github.com/IgorMonkey/LazyCall/releases/latest) · [Screenshots](docs/SCREENSHOTS.md) · [Contributing](CONTRIBUTING.md) · [Privacy](docs/PRIVACY.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [Roadmap](docs/ROADMAP.md)
 
 > **Experimental early release for Windows x64.** Expect bugs, delays, and suggestions that miss the point. Try it, report reproducible problems, and send PRs — contributions are welcome.
 

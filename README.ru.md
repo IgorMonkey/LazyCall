@@ -20,7 +20,7 @@
 
 LazyCall помогает восстановить контекст проекта, собранного с AI, во время технического созвона: слушает разговор, сверяется с выбранными актуальными файлами и предлагает формулировку ответа, которую можно проверить.
 
-[English](README.md) · [Скачать](https://github.com/IgorMonkey/LazyCall/releases/latest) · [Скриншоты](docs/SCREENSHOTS.ru.md) · [Как помочь](CONTRIBUTING.ru.md) · [Приватность](docs/PRIVACY.ru.md) · [Планы](docs/ROADMAP.ru.md)
+[English](README.md) · [Скачать](https://github.com/IgorMonkey/LazyCall/releases/latest) · [Скриншоты](docs/SCREENSHOTS.ru.md) · [Как помочь](CONTRIBUTING.ru.md) · [Приватность](docs/PRIVACY.ru.md) · [Устранение неполадок](docs/TROUBLESHOOTING.ru.md) · [Планы](docs/ROADMAP.ru.md)
 
 > **Экспериментальный ранний релиз для Windows x64.** Приложение ещё сырое: возможны баги, задержки и неудачные подсказки. Тестируйте, приносите воспроизводимые ошибки и присылайте PR — проект открыт для участия.
 
