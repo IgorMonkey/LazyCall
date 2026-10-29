@@ -23,20 +23,20 @@ LazyCall's capture code distinguishes permission, missing-device, unavailable-de
 
 ## System audio is missing
 
-LazyCall captures microphone audio separately from audio shared through the selected display/window source. The available system-audio options depend on Windows, the source you select, and the application being shared.
+System audio is captured separately from the microphone using **Windows loopback** from an audio output device. This can include sound from other applications playing through that same output device; it is not isolated to the selected call window. The **Meeting window** selector in LazyCall controls which window is shown/captured visually, not which application's audio is included.
 
-1. Start a test and, when Windows asks, choose the correct call window or screen and allow audio sharing if the dialog offers it.
-2. Confirm the meeting audio is actually playing through the expected output device and that Windows is not muted.
-3. If LazyCall says **“System audio was not received; only the microphone is being transcribed”**, continue only if microphone-only capture is acceptable; otherwise stop and retry with a supported source.
-4. Try selecting the call window again. If capture remains unavailable, use a supported screen/window source and check whether another app is already capturing it.
+1. Before recording, open Windows **Settings → System → Sound → Output** and check the default playback device. Make sure the meeting audio is playing through that device.
+2. Check Windows volume and **Volume mixer** / per-app output routing. If the meeting app is routed to a different headset or output device, loopback capture from the default device may not include it.
+3. In LazyCall, select the intended **Meeting window** before starting the meeting/recording. This selects the visual source; it does not filter loopback audio to that window.
+4. If LazyCall says **“System audio was not received; only the microphone is being transcribed”**, check the playback device and per-app routing, then make a short test again. Continue with microphone-only capture only if that is sufficient.
 
-Do not assume that microphone capture includes the other participants' audio. Make a short test and verify the transcript before relying on it.
+Make a short test and verify the transcript before relying on it. Audio from other applications using the captured output device may also be included.
 
 ## The call window or screen cannot be captured
 
 If Windows denies capture, the source is missing, or another application is using it:
 
-1. Retry the recording and select the currently open call window or screen in the Windows picker.
+1. In LazyCall, use the **Meeting window** selector to choose the currently open call window before starting the meeting/recording. This is an in-app selector, not a Windows sharing prompt.
 2. If the window was closed, renamed, or recreated, reopen the meeting and select the new window.
 3. Close other screen-recording or capture tools if they may be holding the source, then retry.
 4. If permission was denied, start again and allow the capture prompt. Do not disable Windows security protections to work around a capture failure.
