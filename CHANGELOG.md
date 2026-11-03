@@ -1,10 +1,12 @@
 # LazyCall changelog
 
-## Unreleased
+## 0.3.7 — microphone selection and runtime updates (unreleased)
 
 - Microphones can be discovered and selected before recording. Opening the picker
   briefly checks microphone access, then releases the stream without saving audio.
-- Electron 45 with Node 24 types aligned to its embedded runtime.
+- Electron 45.2.1 with Node 24 types aligned to its embedded runtime.
+- Bilingual Windows troubleshooting guides explain meeting-window selection,
+  system-audio capture, and playback-device routing.
 - Updated, commit-pinned GitHub Actions and a working clean-runner release-review build.
 - CPU speech inference can take up to two minutes on slower hardware. CUDA keeps
   its 30-second limit; the bounded queue and 20-second stop-drain limit are unchanged.
