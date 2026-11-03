@@ -1,6 +1,6 @@
 {
   "name": "lazycall",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "private": true,
   "description": "Experimental assistant for technical calls",
   "main": "dist-electron/main.js",
