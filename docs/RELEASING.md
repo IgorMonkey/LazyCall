@@ -29,7 +29,11 @@ Verify the payload URL embedded in the bootstrap, its pinned hash, the full inst
 
 Test isolated install, launch, download failure, corrupt payload, retry, and uninstall. Verify failures leave an existing installation untouched. Test Codex-found and Codex-missing onboarding. Check user-data compatibility before an upgrade, and prevent installation during recording.
 
-The first public release was checked locally for those installer paths and packaged application behaviour. A clean Windows machine without Microsoft VC Runtime and an actual upgrade from an older public release have not yet been verified. The updater driver and GitHub-provider protocol were exercised with local fixtures; an actual published-GitHub update installation remains unverified. Keep these limits in the release notes, alongside the unsigned-build notice. Broader production use needs clean-machine and real upgrade evidence.
+The first public release was checked locally for those installer paths and packaged application behaviour. The updater driver and GitHub-provider protocol were also exercised with local fixtures.
+
+On 2026-11-03, the installed, published 0.3.6 app discovered and downloaded 0.3.7 through its embedded GitHub feed. The in-app install button launched the published NSIS installer, which upgraded the existing per-user installation. Starting 0.3.7 then reported that it was up to date. A synthetic project, meeting goal, saved meeting, note, confirmed task, and settings were preserved; all five application-data files were byte-identical. This covered one existing Windows machine with Microsoft VC Runtime already installed and a separate test profile. The interactive installer required language selection and installation confirmations; this was not a silent upgrade.
+
+A clean Windows machine without Microsoft VC Runtime remains unverified. Keep that limit and the unsigned-build notice in release notes; this single-machine upgrade check is not a broad compatibility claim.
 
 ## Repository settings
 

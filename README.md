@@ -30,7 +30,7 @@ Download assets from the [GitHub release](https://github.com/IgorMonkey/LazyCall
 - [`LazyCall-Setup-0.3.7.exe`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.7/LazyCall-Setup-0.3.7.exe) — about 920 MiB; includes the offline payload.
 - [`SHA256SUMS.txt`](https://github.com/IgorMonkey/LazyCall/releases/download/v0.3.7/SHA256SUMS.txt) — verify the file you download.
 
-The installers are unsigned early-release builds. Windows may show a warning. Local installer checks covered install, corrupted-download retry, and uninstall; the GitHub update feed has not yet been validated end to end. Review the checksums and use this release only for testing.
+The installers are unsigned early-release builds. Windows may show a warning. Local installer checks covered install, corrupted-download retry, and uninstall. The published 0.3.6 → 0.3.7 update was verified through the in-app GitHub updater on one Windows installation, preserving synthetic projects, meeting data, and settings. Review the checksums and use this release only for testing.
 
 ## What it does
 
@@ -87,7 +87,7 @@ This is an early open-source project still being tested on real calls. A suggest
 - Cloud reply drafts require an available provider and use that provider's limits.
 - A first lookup in an unfamiliar repository can be slower than a later one.
 - The interface supports English and Russian, with light, dark, and system themes.
-- The installers are unsigned early-release builds. The GitHub update feed is not yet validated end to end.
+- The installers are unsigned early-release builds. Installation on a clean Windows machine without Microsoft VC Runtime is not yet verified.
 
 <details>
 <summary>Compact window</summary>

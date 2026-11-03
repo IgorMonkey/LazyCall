@@ -66,7 +66,7 @@ yarn dist:web --prepackaged release/public-review/win-unpacked --full-installer
 
 The build validates this `owner/repository` value and writes the staged GitHub-provider update feed for that exact repository. A normal release uses the matching `latest.yml` feed; a future prerelease channel is a deliberate separate release decision. Its underlying Electron-builder calls use `--publish never`: these commands build files locally and do not create a repository, upload assets, publish a release, or enable updates.
 
-The isolated local installer flow has covered installation, corrupted-download retry, and uninstall. A clean Windows machine without the Microsoft VC runtime and a real GitHub-hosted upgrade path are still unverified. Disclose those limits for this early release and keep release notes and assets under maintainer review.
+The isolated local installer flow has covered installation, corrupted-download retry, and uninstall. The published 0.3.6 → 0.3.7 upgrade was verified through the in-app GitHub updater on an existing Windows installation, including preserved synthetic meeting/project data and settings; see [RELEASING.md](RELEASING.md). A clean Windows machine without Microsoft VC Runtime remains unverified. Disclose that limit and keep release notes and assets under maintainer review.
 
 ## Do not use old offline artifacts as public assets
 
