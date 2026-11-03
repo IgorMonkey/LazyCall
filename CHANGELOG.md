@@ -1,6 +1,6 @@
 # LazyCall changelog
 
-## 0.3.7 — microphone selection and runtime updates (unreleased)
+## 0.3.7 — microphone selection and runtime updates
 
 - Microphones can be discovered and selected before recording. Opening the picker
   briefly checks microphone access, then releases the stream without saving audio.
