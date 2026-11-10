@@ -38,12 +38,12 @@
     "@types/node": "24.19.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@vitejs/plugin-react": "6.1.2",
-    "electron": "45.2.1",
+    "@vitejs/plugin-react": "6.2.1",
+    "electron": "45.2.3",
     "electron-builder": "26.18.0",
-    "playwright": "1.64.1",
+    "playwright": "1.65.0",
     "typescript": "6.0.3",
-    "vite": "8.3.5"
+    "vite": "8.3.6"
   },
   "build": {
     "appId": "local.callme.app",
